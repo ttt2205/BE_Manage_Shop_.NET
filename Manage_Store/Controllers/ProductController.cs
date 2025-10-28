@@ -84,7 +84,6 @@ namespace Manage_Store.Controllers
         [HttpPut("{id:int}")]
         public async Task<IActionResult> UpdateProduct(int id, [FromBody] ProductDto productDto)
         {
-
             var product = await _ProductService.GetProductAsync(id);
             if (product == null)
                 throw new BadRequestException("product không tồn tại");

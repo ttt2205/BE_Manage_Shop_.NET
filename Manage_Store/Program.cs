@@ -25,6 +25,7 @@ builder.Services.AddScoped<IAuth, AuthImpl>();
 builder.Services.AddScoped<IUserService, UserServiceImpl>();
 builder.Services.AddScoped<ICategoryService, CategoryImpl>();
 builder.Services.AddScoped<IProductService, ProductImpl>();
+builder.Services.AddScoped<IPromotionService, PromotionImpl>();
 
 
 var app = builder.Build();
