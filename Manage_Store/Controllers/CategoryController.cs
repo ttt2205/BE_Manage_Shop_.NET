@@ -47,7 +47,7 @@ namespace Manage_Store.Controllers
         {
             var category = await _categoryService.GetCategoryAsync(id);
             if (category == null)
-                throw new NotFoundException("Category không tồn tại");
+                throw new BadRequestException("Category không tồn tại");
 
             return Ok(ApiResponse<Category>.Builder()
                 .WithSuccess(true)
@@ -105,7 +105,7 @@ namespace Manage_Store.Controllers
         {
             var category = await _categoryService.GetCategoryAsync(id);
             if (category == null)
-                throw new NotFoundException("Category không tồn tại");
+                throw new BadRequestException("Category không tồn tại");
 
             await _categoryService.DeleteAsync(id);
             return Ok(ApiResponse<string>.Builder()

@@ -26,7 +26,6 @@ namespace Manage_Store.Models.Entities
         public string Unit { get; set; } = "pcs";
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
-
         // Navigation
         public Category? Category { get; set; }
         public Supplier? Supplier { get; set; }

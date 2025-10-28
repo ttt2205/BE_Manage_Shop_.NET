@@ -24,6 +24,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<IAuth, AuthImpl>();
 builder.Services.AddScoped<IUserService, UserServiceImpl>();
 builder.Services.AddScoped<ICategoryService, CategoryImpl>();
+builder.Services.AddScoped<IProductService, ProductImpl>();
 
 
 var app = builder.Build();

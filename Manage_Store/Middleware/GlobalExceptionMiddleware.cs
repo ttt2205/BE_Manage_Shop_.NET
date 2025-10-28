@@ -32,12 +32,22 @@ namespace Manage_Store.Middleware
         private Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
             context.Response.ContentType = "application/json";
-            int statusCode = (int)HttpStatusCode.InternalServerError;
+
+            int statusCode;
             string message = exception.Message;
 
+            // Phân loại lỗi
             if (exception is NotFoundException)
             {
-                statusCode = (int)HttpStatusCode.NotFound; 
+                statusCode = (int)HttpStatusCode.NotFound; // 404
+            }
+            else if (exception is BadRequestException)
+            {
+                statusCode = (int)HttpStatusCode.BadRequest; // 400
+            }
+            else
+            {
+                statusCode = (int)HttpStatusCode.InternalServerError; // 500
             }
 
             context.Response.StatusCode = statusCode;
