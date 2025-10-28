@@ -2,6 +2,7 @@
 using Manage_Store.Services;
 using Manage_Store.Services.Impl;
 using Microsoft.EntityFrameworkCore;
+using Manage_Store.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +23,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // Đăng ký DI cho Service
 builder.Services.AddScoped<IAuth, AuthImpl>();
 builder.Services.AddScoped<IUserService, UserServiceImpl>();
+builder.Services.AddScoped<ICategoryService, CategoryImpl>();
+
 
 var app = builder.Build();
 
@@ -31,6 +34,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseMiddleware<GlobalExceptionMiddleware>();
 
 app.UseHttpsRedirection();
 
