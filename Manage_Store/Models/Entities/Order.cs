@@ -11,7 +11,7 @@ namespace Manage_Store.Models.Entities
 
         public int? CustomerId { get; set; }
         public int? UserId { get; set; }
-        public int? PromoId { get; set; }
+        public int? PromotionId { get; set; }
 
         public DateTime OrderDate { get; set; } = DateTime.Now;
 
@@ -29,6 +29,7 @@ namespace Manage_Store.Models.Entities
         public User? User { get; set; }
         public Promotion? Promotion { get; set; }
 
-        public ICollection<OrderItem>? Items { get; set; }
+      public ICollection<OrderItem> Items { get; set; } = new List<OrderItem>();
+
     }
 }

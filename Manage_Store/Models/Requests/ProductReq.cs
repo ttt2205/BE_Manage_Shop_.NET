@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Manage_Store.Models.Dtos
+namespace Manage_Store.Models.Requests
 {
-    public class ProductDto
+    public class ProductReq
     {
         public int? CategoryId { get; set; }
 

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace Manage_Store.Models.Entities
 {
@@ -24,6 +25,7 @@ namespace Manage_Store.Models.Entities
         public decimal Subtotal { get; set; }
 
         // Navigation
+        [JsonIgnore]
         public Order? Order { get; set; }
         public Product? Product { get; set; }
     }

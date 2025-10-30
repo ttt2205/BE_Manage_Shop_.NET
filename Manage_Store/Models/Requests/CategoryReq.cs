@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
-namespace Manage_Store.Models.Dtos
+namespace Manage_Store.Models.Requests
 {
-    public class CategoryDto
+    public class CategoryReq
     {
         [Required(ErrorMessage = "Category name is required")]
         public string CategoryName { get; set; } = string.Empty;

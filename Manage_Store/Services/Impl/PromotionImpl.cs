@@ -2,6 +2,7 @@ using Manage_Store.Models.Dtos;
 using Manage_Store.Models.Entities;
 using Manage_Store.Data;
 using Microsoft.EntityFrameworkCore;
+using Manage_Store.Models.Requests;
 
 
 namespace Manage_Store.Services.Impl
@@ -20,19 +21,19 @@ namespace Manage_Store.Services.Impl
             return await _context.Promotions.AnyAsync(p => p.Status == "active" && p.PromoCode == code);
         }
 
-        public async Task<Promotion> CreateAsync(PromotionDto promotionDto)
+        public async Task<Promotion> CreateAsync(PromotionReq promotionReq)
         {
             var promotion = new Promotion
             {
-                PromoCode = promotionDto.PromoCode,
-                Description = promotionDto.Description,
-                DiscountType = promotionDto.DiscountType,
-                DiscountValue = promotionDto.DiscountValue,
-                StartDate = promotionDto.StartDate,
-                EndDate = promotionDto.EndDate,
-                MinOrderAmount = promotionDto.MinOrderAmount,
-                UsageLimit = promotionDto.UsageLimit,
-                UsedCount = promotionDto.UsedCount,
+                PromoCode = promotionReq.PromoCode,
+                Description = promotionReq.Description,
+                DiscountType = promotionReq.DiscountType,
+                DiscountValue = promotionReq.DiscountValue,
+                StartDate = promotionReq.StartDate,
+                EndDate = promotionReq.EndDate,
+                MinOrderAmount = promotionReq.MinOrderAmount,
+                UsageLimit = promotionReq.UsageLimit,
+                UsedCount = promotionReq.UsedCount,
             };
 
             // Thêm vào DbContext
@@ -60,19 +61,19 @@ namespace Manage_Store.Services.Impl
             return promotion;
         }
 
-        public async Task<Promotion> UpdateAsync(int id, PromotionDto promotionDto)
+        public async Task<Promotion> UpdateAsync(int id, PromotionReq promotionReq)
         {
            var promotion = new Promotion
             {
-                PromoCode = promotionDto.PromoCode,
-                Description = promotionDto.Description,
-                DiscountType = promotionDto.DiscountType,
-                DiscountValue = promotionDto.DiscountValue,
-                StartDate = promotionDto.StartDate,
-                EndDate = promotionDto.EndDate,
-                MinOrderAmount = promotionDto.MinOrderAmount,
-                UsageLimit = promotionDto.UsageLimit,
-                UsedCount = promotionDto.UsedCount,
+                PromoCode = promotionReq.PromoCode,
+                Description = promotionReq.Description,
+                DiscountType = promotionReq.DiscountType,
+                DiscountValue = promotionReq.DiscountValue,
+                StartDate = promotionReq.StartDate,
+                EndDate = promotionReq.EndDate,
+                MinOrderAmount = promotionReq.MinOrderAmount,
+                UsageLimit = promotionReq.UsageLimit,
+                UsedCount = promotionReq.UsedCount,
             };
             await _context.SaveChangesAsync();
 

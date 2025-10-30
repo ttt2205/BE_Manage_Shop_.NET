@@ -1,9 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 
 
-namespace Manage_Store.Models.Dtos
+namespace Manage_Store.Models.Requests
 {
-    public class PromotionDto
+    public class PromotionReq
     {
         [Required, StringLength(50)]
         public string PromoCode { get; set; } = string.Empty;

@@ -1,7 +1,8 @@
-using Manage_Store.Models.Dtos;
+
 using Manage_Store.Models.Entities;
 using Manage_Store.Data;
 using Microsoft.EntityFrameworkCore;
+using Manage_Store.Models.Requests;
 
 
 namespace Manage_Store.Services.Impl
@@ -15,12 +16,12 @@ namespace Manage_Store.Services.Impl
             _context = context;
         }
 
-        public async Task<Category> CreateAsync(CategoryDto categoryDto)
+        public async Task<Category> CreateAsync(CategoryReq categoryReq)
         {
             // Map DTO sang entity
             var category = new Category
             {
-                CategoryName = categoryDto.CategoryName
+                CategoryName = categoryReq.CategoryName
             };
             _context.Categories.Add(category);
             await _context.SaveChangesAsync();
@@ -42,12 +43,12 @@ namespace Manage_Store.Services.Impl
             return category;
         }
 
-        public async Task<Category> UpdateAsync(int id, CategoryDto categoryDto)
+        public async Task<Category> UpdateAsync(int id, CategoryReq categoryReq)
         {
 
             var category = await _context.Categories.FindAsync(id);
 
-            category.CategoryName = categoryDto.CategoryName;
+            category.CategoryName = categoryReq.CategoryName;
             _context.Categories.Update(category);
             await _context.SaveChangesAsync();
 

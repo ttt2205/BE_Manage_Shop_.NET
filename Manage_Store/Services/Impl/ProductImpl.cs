@@ -2,6 +2,7 @@ using Manage_Store.Models.Dtos;
 using Manage_Store.Models.Entities;
 using Manage_Store.Data;
 using Microsoft.EntityFrameworkCore;
+using Manage_Store.Models.Requests;
 
 
 namespace Manage_Store.Services.Impl
@@ -15,17 +16,17 @@ namespace Manage_Store.Services.Impl
             _context = context;
         }
 
-        public async Task<Product> CreateAsync(ProductDto productDto)
+        public async Task<Product> CreateAsync(ProductReq productReq)
         {
 
             var product = new Product
             {
-                ProductName = productDto.ProductName,
-                Barcode = productDto.Barcode,
-                Price = productDto.Price,
-                Unit = productDto.Unit,
-                CategoryId = productDto.CategoryId,
-                SupplierId = productDto.SupplierId,
+                ProductName = productReq.ProductName,
+                Barcode = productReq.Barcode,
+                Price = productReq.Price,
+                Unit = productReq.Unit,
+                CategoryId = productReq.CategoryId,
+                SupplierId = productReq.SupplierId,
             };
 
             // Thêm vào DbContext
@@ -65,16 +66,16 @@ namespace Manage_Store.Services.Impl
             return product;
         }
 
-        public async Task<Product> UpdateAsync(int id, ProductDto productDto)
+        public async Task<Product> UpdateAsync(int id, ProductReq productReq)
         {
             var product = await _context.Products.FindAsync(id);
 
-            product.ProductName = productDto.ProductName;
-            product.Barcode = productDto.Barcode;
-            product.Price = productDto.Price;
-            product.Unit = productDto.Unit;
-            product.CategoryId = productDto.CategoryId;
-            product.SupplierId = productDto.SupplierId;
+            product.ProductName = productReq.ProductName;
+            product.Barcode = productReq.Barcode;
+            product.Price = productReq.Price;
+            product.Unit = productReq.Unit;
+            product.CategoryId = productReq.CategoryId;
+            product.SupplierId = productReq.SupplierId;
 
             await _context.SaveChangesAsync();
 

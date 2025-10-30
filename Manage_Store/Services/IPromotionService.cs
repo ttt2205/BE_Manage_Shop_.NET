@@ -6,7 +6,7 @@ namespace Manage_Store.Services
 {
     public interface IPromotionService
     {
-        Task<Promotion> CreateAsync(PromotionDto promotionDto);
+        Task<Promotion> CreateAsync(PromotionReq promotionReq);
         Task<bool> IsCodeExistsAsync(string code);
 
 
@@ -14,7 +14,7 @@ namespace Manage_Store.Services
 
         Task<Promotion> GetPromotionAsync(int id);
 
-        Task<Promotion> UpdateAsync(int id, PromotionDto promotionDto);
+        Task<Promotion> UpdateAsync(int id, PromotionReq promotionReq);
 
         Task DeleteAsync(int id);
     }

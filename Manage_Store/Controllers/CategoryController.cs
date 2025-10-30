@@ -4,7 +4,6 @@ using Manage_Store.Responses;
 using Manage_Store.Exceptions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Manage_Store.Models.Dtos;
 using Manage_Store.Models.Entities;
 
 namespace Manage_Store.Controllers
@@ -60,17 +59,13 @@ namespace Manage_Store.Controllers
 
         // POST: api/category
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CategoryDto categoryDto)
+        public async Task<IActionResult> Create([FromBody] CategoryReq categoryReq)
         {
-            if (categoryDto == null)
+            if (categoryReq == null)
             {
-                return BadRequest(ApiResponse<string>.Builder()
-                    .WithSuccess(false)
-                    .WithStatus(400)
-                    .WithMessage("Dữ liệu không hợp lệ")
-                    .Build());
+                throw new BadRequestException("Dữ liệu không hợp lệ");
             }
-            var created = await _categoryService.CreateAsync(categoryDto);
+            var created = await _categoryService.CreateAsync(categoryReq);
 
             return Ok(ApiResponse<Category>.Builder()
                 .WithSuccess(true)
@@ -83,14 +78,14 @@ namespace Manage_Store.Controllers
 
         // PUT: api/category/5
         [HttpPut("{id:int}")]
-        public async Task<IActionResult> Update(int id, [FromBody] CategoryDto categoryDto)
+        public async Task<IActionResult> Update(int id, [FromBody] CategoryReq categoryReq)
         {
 
             var category = await _categoryService.GetCategoryAsync(id);
             if (category == null)
                 throw new NotFoundException("Category không tồn tại");
 
-            var updated = await _categoryService.UpdateAsync(id, categoryDto);
+            var updated = await _categoryService.UpdateAsync(id, categoryReq);
             return Ok(ApiResponse<Category>.Builder()
                 .WithSuccess(true)
                 .WithStatus(200)

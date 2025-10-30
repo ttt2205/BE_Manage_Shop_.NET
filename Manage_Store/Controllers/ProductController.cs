@@ -2,10 +2,10 @@ using Manage_Store.Models.Dtos;
 using Manage_Store.Models.Entities;
 using Manage_Store.Responses;
 using Manage_Store.Services;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Manage_Store.Exceptions;
-using Manage_Store.Responses;
+using Manage_Store.Models.Requests;
+
 
 namespace Manage_Store.Controllers
 {
@@ -23,9 +23,9 @@ namespace Manage_Store.Controllers
 
         // create
         [HttpPost]
-        public async Task<IActionResult> CreateProduct([FromBody] ProductDto productDto)
+        public async Task<IActionResult> CreateProduct([FromBody] ProductReq productReq)
         {
-            if (productDto == null)
+            if (productReq == null)
             {
                 return BadRequest(ApiResponse<string>.Builder()
                     .WithSuccess(false)
@@ -33,7 +33,7 @@ namespace Manage_Store.Controllers
                     .WithMessage("Dữ liệu không hợp lệ")
                     .Build());
             }
-            var created = await _ProductService.CreateAsync(productDto);
+            var created = await _ProductService.CreateAsync(productReq);
 
             return Ok(ApiResponse<Product>.Builder()
                 .WithSuccess(true)
@@ -82,13 +82,13 @@ namespace Manage_Store.Controllers
 
         // update
         [HttpPut("{id:int}")]
-        public async Task<IActionResult> UpdateProduct(int id, [FromBody] ProductDto productDto)
+        public async Task<IActionResult> UpdateProduct(int id, [FromBody] ProductReq productReq)
         {
             var product = await _ProductService.GetProductAsync(id);
             if (product == null)
                 throw new BadRequestException("product không tồn tại");
 
-            var updated = await _ProductService.UpdateAsync(id, productDto);
+            var updated = await _ProductService.UpdateAsync(id, productReq);
             return Ok(ApiResponse<Product>.Builder()
                 .WithSuccess(true)
                 .WithStatus(200)

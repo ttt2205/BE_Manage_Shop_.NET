@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Manage_Store.Exceptions;
 using Manage_Store.Responses;
+using Manage_Store.Models.Requests;
 
 namespace Manage_Store.Controllers
 {
@@ -23,9 +24,9 @@ namespace Manage_Store.Controllers
 
         // create
         [HttpPost]
-        public async Task<IActionResult> CreatePromotion([FromBody] PromotionDto promotionDto)
+        public async Task<IActionResult> CreatePromotion([FromBody] PromotionReq promotionReq)
         {
-            if (promotionDto == null)
+            if (promotionReq == null)
             {
                 return BadRequest(ApiResponse<string>.Builder()
                     .WithSuccess(false)
@@ -33,13 +34,13 @@ namespace Manage_Store.Controllers
                     .WithMessage("Dữ liệu không hợp lệ")
                     .Build());
             }
-            bool isExist = await _PromotionService.IsCodeExistsAsync(promotionDto.PromoCode);
+            bool isExist = await _PromotionService.IsCodeExistsAsync(promotionReq.PromoCode);
             if (isExist)
             {
                 throw new BadRequestException("Mã khuyến mãi đã tồn tại!");
             }
 
-            var promotion = await _PromotionService.CreateAsync(promotionDto);
+            var promotion = await _PromotionService.CreateAsync(promotionReq);
 
             return Ok(ApiResponse<Promotion>.Builder()
                 .WithSuccess(true)
@@ -88,13 +89,13 @@ namespace Manage_Store.Controllers
 
         // update
         [HttpPut("{id:int}")]
-        public async Task<IActionResult> UpdatePromotion(int id, [FromBody] PromotionDto promotionDto)
+        public async Task<IActionResult> UpdatePromotion(int id, [FromBody] PromotionReq promotionReq)
         {
             var promotion = await _PromotionService.GetPromotionAsync(id);
             if (promotion == null)
                 throw new BadRequestException("promotion không tồn tại");
 
-            var updated = await _PromotionService.UpdateAsync(id, promotionDto);
+            var updated = await _PromotionService.UpdateAsync(id, promotionReq);
             return Ok(ApiResponse<Promotion>.Builder()
                 .WithSuccess(true)
                 .WithStatus(200)
