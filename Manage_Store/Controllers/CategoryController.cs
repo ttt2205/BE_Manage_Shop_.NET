@@ -22,17 +22,10 @@ namespace Manage_Store.Controllers
 
         // GET: api/category
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+        public async Task<IActionResult> GetCategories([FromQuery] int page = 1, [FromQuery] int pageSize = 10, [FromQuery] string? name = null)
         {
-            ResPagination<List<Category>> pagedResult = await _categoryService.GetAllAsync(page, pageSize);
-
-            return Ok(ApiResponse<ResPagination<List<Category>>>.Builder()
-                 .WithSuccess(true)
-                 .WithStatus(200)
-                 .WithMessage("Lấy danh sách category thành công")
-                 .WithData(pagedResult)
-                 .Build());
-
+            var response = await _categoryService.GetAllAsync(page, pageSize);
+            return Ok(response);
         }
 
         // GET: api/category/{id}

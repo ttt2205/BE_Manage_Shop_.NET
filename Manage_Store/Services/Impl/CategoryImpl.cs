@@ -4,6 +4,7 @@ using Manage_Store.Data;
 using Microsoft.EntityFrameworkCore;
 using Manage_Store.Models.Requests;
 using Manage_Store.Models.Dtos;
+using Manage_Store.Responses;
 
 
 namespace Manage_Store.Services.Impl
@@ -29,29 +30,44 @@ namespace Manage_Store.Services.Impl
             return category;
         }
 
-        public async Task<ResPagination<List<Category>>> GetAllAsync(int page, int pageSize)
+        public async Task<ApiResPagination<List<Category>>> GetAllAsync(int page, int pageSize)
         {
             var query = _context.Categories.AsQueryable();
 
-            var totalItems = await query.CountAsync();
-            var data = await query.Skip((page - 1) * pageSize)
-                                  .Take(pageSize)
-                                  .ToListAsync(); // đây là List<Category>
-            Console.WriteLine(data.Count);
-            var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+            // Tổng số item
+            int totalItems = await query.CountAsync();
 
-            return new ResPagination<List<Category>>
+            // Lấy dữ liệu phân trang
+            var items = await query
+                .OrderBy(c => c.Id)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            // Tính tổng số trang
+            int totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+
+            // Tạo Meta
+            var meta = new Meta
             {
-                result = data, // <- phải có dữ liệu
-                meta = new ResPagination<List<Category>>.Meta
-                {
-                    currentPage = page,
-                    pageSize = pageSize,
-                    totalItems = totalItems,
-                    totalPage = totalPages
-                }
+                CurrentPage = page,
+                PageSize = pageSize,
+                TotalItems = totalItems,
+                TotalPage = totalPages
             };
+
+            // Trả về ApiResponse với builder
+            var response = ApiResPagination<List<Category>>.Builder()
+                .WithSuccess(true)
+                .WithStatus(200)
+                .WithMessage("Danh sách category")
+                .WithResult(items)
+                .WithMeta(meta)
+                .Build();
+
+            return response;
         }
+
 
 
         public async Task<Category> GetCategoryAsync(int id)
