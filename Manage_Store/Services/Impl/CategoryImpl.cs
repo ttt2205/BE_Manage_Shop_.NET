@@ -3,6 +3,7 @@ using Manage_Store.Models.Entities;
 using Manage_Store.Data;
 using Microsoft.EntityFrameworkCore;
 using Manage_Store.Models.Requests;
+using Manage_Store.Models.Dtos;
 
 
 namespace Manage_Store.Services.Impl
@@ -28,10 +29,30 @@ namespace Manage_Store.Services.Impl
             return category;
         }
 
-        public async Task<List<Category>> GetAllAsync()
+        public async Task<ResPagination<List<Category>>> GetAllAsync(int page, int pageSize)
         {
-            return await _context.Categories.ToListAsync();
+            var query = _context.Categories.AsQueryable();
+
+            var totalItems = await query.CountAsync();
+            var data = await query.Skip((page - 1) * pageSize)
+                                  .Take(pageSize)
+                                  .ToListAsync(); // đây là List<Category>
+            Console.WriteLine(data.Count);
+            var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+
+            return new ResPagination<List<Category>>
+            {
+                result = data, // <- phải có dữ liệu
+                meta = new ResPagination<List<Category>>.Meta
+                {
+                    currentPage = page,
+                    pageSize = pageSize,
+                    totalItems = totalItems,
+                    totalPage = totalPages
+                }
+            };
         }
+
 
         public async Task<Category> GetCategoryAsync(int id)
         {

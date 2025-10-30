@@ -1,4 +1,5 @@
 using Manage_Store.Models.Requests;
+using Manage_Store.Models.Dtos;
 using Manage_Store.Services;
 using Manage_Store.Responses;
 using Manage_Store.Exceptions;
@@ -21,23 +22,17 @@ namespace Manage_Store.Controllers
 
         // GET: api/category
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
-            var categories = await _categoryService.GetAllAsync();
-            if (categories == null || categories.Count == 0)
-            {
-                return NotFound(ApiResponse<string>.Builder()
-                    .WithSuccess(false)
-                    .WithStatus(404)
-                    .WithMessage("Không có dữ liệu category")
-                    .Build());
-            }
-            return Ok(ApiResponse<List<Category>>.Builder()
-                .WithSuccess(true)
-                .WithStatus(200)
-                .WithMessage("Lấy danh sách category thành công")
-                .WithData(categories)
-                .Build());
+            ResPagination<List<Category>> pagedResult = await _categoryService.GetAllAsync(page, pageSize);
+
+            return Ok(ApiResponse<ResPagination<List<Category>>>.Builder()
+                 .WithSuccess(true)
+                 .WithStatus(200)
+                 .WithMessage("Lấy danh sách category thành công")
+                 .WithData(pagedResult)
+                 .Build());
+
         }
 
         // GET: api/category/{id}
