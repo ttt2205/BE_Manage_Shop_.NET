@@ -7,19 +7,25 @@ namespace Manage_Store.Models.Entities
     public class Customer
     {
         [Key]
+        [Column("id")]
         public int Id { get; set; }
 
-        [Required, StringLength(100)]
+        [Column("name")]
         public string Name { get; set; } = string.Empty;
 
-        [StringLength(20)]
+        [Column("phone")]
         public string? Phone { get; set; }
 
-        [StringLength(100)]
+        [Column("email")]
         public string? Email { get; set; }
 
+        [Column("address")]
         public string? Address { get; set; }
 
+        [Column("created_at")]
         public DateTime CreatedAt { get; set; } = DateTime.Now;
+
+        // Navigation
+        public ICollection<Order>? Orders { get; set; }
     }
 }

@@ -1,6 +1,19 @@
 @Manage_Store_HostAddress = http://localhost:5052
-
-GET {{Manage_Store_HostAddress}}/weatherforecast/
+### Dashboard Summary
+GET {{Manage_Store_HostAddress}}/api/Statistics/dashboard-summary
+Accept: application/json
+### Revenue by Day  
+GET {{Manage_Store_HostAddress}}/api/Statistics/revenue-by-day?startDate=2025-01-31&endDate=2025-01-31
 Accept: application/json
 
-###
+### Revenue by Month
+GET {{Manage_Store_HostAddress}}/api/Statistics/revenue-by-month?year=2025&specificMonth=1
+Accept: application/json
+
+### Revenue by Year
+GET {{Manage_Store_HostAddress}}/api/Statistics/revenue-by-year?startYear=2023&endYear=2024
+Accept: application/json
+
+### Top Products
+GET {{Manage_Store_HostAddress}}/api/Statistics/top-products?topCount=5
+Accept: application/json

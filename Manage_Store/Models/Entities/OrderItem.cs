@@ -7,20 +7,25 @@ namespace Manage_Store.Models.Entities
     public class OrderItem
     {
         [Key]
+        [Column("id")]
         public int Id { get; set; }
 
+        [Column("order_id")]
         public int OrderId { get; set; }
+
+        [Column("product_id")]
         public int ProductId { get; set; }
 
         [Required]
+        [Column("quantity")]
         public int Quantity { get; set; }
 
         [Required]
-        [Column(TypeName = "decimal(10,2)")]
+        [Column("price", TypeName = "decimal(10,2)")]
         public decimal Price { get; set; }
 
         [Required]
-        [Column(TypeName = "decimal(10,2)")]
+        [Column("subtotal", TypeName = "decimal(10,2)")]
         public decimal Subtotal { get; set; }
 
         // Navigation

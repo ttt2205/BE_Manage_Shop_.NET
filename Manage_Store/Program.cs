@@ -22,7 +22,17 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // Đăng ký DI cho Service
 builder.Services.AddScoped<IAuth, AuthImpl>();
 builder.Services.AddScoped<IUserService, UserServiceImpl>();
-
+builder.Services.AddScoped<IStatistics, StatisticsImpl>();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReactApp", policy =>
+    {
+        policy.WithOrigins("http://localhost:3000") // FE URL
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -35,7 +45,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
-
+app.UseCors("AllowReactApp");
 app.MapControllers();
 
 app.Run();
