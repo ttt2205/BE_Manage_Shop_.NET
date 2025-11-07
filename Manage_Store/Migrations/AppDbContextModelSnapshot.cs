@@ -22,7 +22,39 @@ namespace Manage_Store.Migrations
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
-            modelBuilder.Entity("Manage_Store.Models.Category", b =>
+            modelBuilder.Entity("Manage_Store.Models.Entities.AuditSessions", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Note")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("enum('in_progress','completed','cancelled')");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("audit_sessions");
+                });
+
+            modelBuilder.Entity("Manage_Store.Models.Entities.Category", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -40,7 +72,7 @@ namespace Manage_Store.Migrations
                     b.ToTable("categories");
                 });
 
-            modelBuilder.Entity("Manage_Store.Models.Customer", b =>
+            modelBuilder.Entity("Manage_Store.Models.Entities.Customer", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -72,7 +104,7 @@ namespace Manage_Store.Migrations
                     b.ToTable("customers");
                 });
 
-            modelBuilder.Entity("Manage_Store.Models.Inventory", b =>
+            modelBuilder.Entity("Manage_Store.Models.Entities.Inventory", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -96,7 +128,46 @@ namespace Manage_Store.Migrations
                     b.ToTable("inventory");
                 });
 
-            modelBuilder.Entity("Manage_Store.Models.Order", b =>
+            modelBuilder.Entity("Manage_Store.Models.Entities.InventoryAuditItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ActualQuantity")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("AuditSessionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Difference")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Note")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SessionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SystemQuantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuditSessionId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("inventory_audit_items");
+                });
+
+            modelBuilder.Entity("Manage_Store.Models.Entities.Order", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -140,7 +211,7 @@ namespace Manage_Store.Migrations
                     b.ToTable("orders");
                 });
 
-            modelBuilder.Entity("Manage_Store.Models.OrderItem", b =>
+            modelBuilder.Entity("Manage_Store.Models.Entities.OrderItem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -172,7 +243,7 @@ namespace Manage_Store.Migrations
                     b.ToTable("order_items");
                 });
 
-            modelBuilder.Entity("Manage_Store.Models.Payment", b =>
+            modelBuilder.Entity("Manage_Store.Models.Entities.Payment", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -200,7 +271,7 @@ namespace Manage_Store.Migrations
                     b.ToTable("payments");
                 });
 
-            modelBuilder.Entity("Manage_Store.Models.Product", b =>
+            modelBuilder.Entity("Manage_Store.Models.Entities.Product", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -243,7 +314,7 @@ namespace Manage_Store.Migrations
                     b.ToTable("products");
                 });
 
-            modelBuilder.Entity("Manage_Store.Models.Promotion", b =>
+            modelBuilder.Entity("Manage_Store.Models.Entities.Promotion", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -291,7 +362,7 @@ namespace Manage_Store.Migrations
                     b.ToTable("promotions");
                 });
 
-            modelBuilder.Entity("Manage_Store.Models.Supplier", b =>
+            modelBuilder.Entity("Manage_Store.Models.Entities.Supplier", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -320,7 +391,7 @@ namespace Manage_Store.Migrations
                     b.ToTable("suppliers");
                 });
 
-            modelBuilder.Entity("Manage_Store.Models.User", b =>
+            modelBuilder.Entity("Manage_Store.Models.Entities.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -354,9 +425,20 @@ namespace Manage_Store.Migrations
                     b.ToTable("users");
                 });
 
-            modelBuilder.Entity("Manage_Store.Models.Inventory", b =>
+            modelBuilder.Entity("Manage_Store.Models.Entities.AuditSessions", b =>
                 {
-                    b.HasOne("Manage_Store.Models.Product", "Product")
+                    b.HasOne("Manage_Store.Models.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Manage_Store.Models.Entities.Inventory", b =>
+                {
+                    b.HasOne("Manage_Store.Models.Entities.Product", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -365,17 +447,34 @@ namespace Manage_Store.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("Manage_Store.Models.Order", b =>
+            modelBuilder.Entity("Manage_Store.Models.Entities.InventoryAuditItem", b =>
                 {
-                    b.HasOne("Manage_Store.Models.Customer", "Customer")
+                    b.HasOne("Manage_Store.Models.Entities.AuditSessions", "AuditSession")
+                        .WithMany("AuditItems")
+                        .HasForeignKey("AuditSessionId");
+
+                    b.HasOne("Manage_Store.Models.Entities.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AuditSession");
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("Manage_Store.Models.Entities.Order", b =>
+                {
+                    b.HasOne("Manage_Store.Models.Entities.Customer", "Customer")
                         .WithMany()
                         .HasForeignKey("CustomerId");
 
-                    b.HasOne("Manage_Store.Models.Promotion", "Promotion")
+                    b.HasOne("Manage_Store.Models.Entities.Promotion", "Promotion")
                         .WithMany()
                         .HasForeignKey("PromotionId");
 
-                    b.HasOne("Manage_Store.Models.User", "User")
+                    b.HasOne("Manage_Store.Models.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
 
@@ -386,15 +485,15 @@ namespace Manage_Store.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Manage_Store.Models.OrderItem", b =>
+            modelBuilder.Entity("Manage_Store.Models.Entities.OrderItem", b =>
                 {
-                    b.HasOne("Manage_Store.Models.Order", "Order")
+                    b.HasOne("Manage_Store.Models.Entities.Order", "Order")
                         .WithMany("Items")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Manage_Store.Models.Product", "Product")
+                    b.HasOne("Manage_Store.Models.Entities.Product", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -405,9 +504,9 @@ namespace Manage_Store.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("Manage_Store.Models.Payment", b =>
+            modelBuilder.Entity("Manage_Store.Models.Entities.Payment", b =>
                 {
-                    b.HasOne("Manage_Store.Models.Order", "Order")
+                    b.HasOne("Manage_Store.Models.Entities.Order", "Order")
                         .WithMany()
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -416,13 +515,13 @@ namespace Manage_Store.Migrations
                     b.Navigation("Order");
                 });
 
-            modelBuilder.Entity("Manage_Store.Models.Product", b =>
+            modelBuilder.Entity("Manage_Store.Models.Entities.Product", b =>
                 {
-                    b.HasOne("Manage_Store.Models.Category", "Category")
+                    b.HasOne("Manage_Store.Models.Entities.Category", "Category")
                         .WithMany()
                         .HasForeignKey("CategoryId");
 
-                    b.HasOne("Manage_Store.Models.Supplier", "Supplier")
+                    b.HasOne("Manage_Store.Models.Entities.Supplier", "Supplier")
                         .WithMany()
                         .HasForeignKey("SupplierId");
 
@@ -431,7 +530,12 @@ namespace Manage_Store.Migrations
                     b.Navigation("Supplier");
                 });
 
-            modelBuilder.Entity("Manage_Store.Models.Order", b =>
+            modelBuilder.Entity("Manage_Store.Models.Entities.AuditSessions", b =>
+                {
+                    b.Navigation("AuditItems");
+                });
+
+            modelBuilder.Entity("Manage_Store.Models.Entities.Order", b =>
                 {
                     b.Navigation("Items");
                 });

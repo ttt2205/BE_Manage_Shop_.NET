@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Manage_Store.Migrations
 {
     /// <inheritdoc />
-    public partial class initialmigration : Migration
+    public partial class AddAuditTables : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -156,6 +156,32 @@ namespace Manage_Store.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "audit_sessions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    StartDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    EndDate = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    Note = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Status = table.Column<string>(type: "enum('in_progress','completed','cancelled')", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_audit_sessions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_audit_sessions_users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "orders",
                 columns: table => new
                 {
@@ -207,6 +233,38 @@ namespace Manage_Store.Migrations
                     table.PrimaryKey("PK_inventory", x => x.Id);
                     table.ForeignKey(
                         name: "FK_inventory_products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "products",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "inventory_audit_items",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    ProductId = table.Column<int>(type: "int", nullable: false),
+                    SessionId = table.Column<int>(type: "int", nullable: false),
+                    SystemQuantity = table.Column<int>(type: "int", nullable: false),
+                    ActualQuantity = table.Column<int>(type: "int", nullable: false),
+                    Difference = table.Column<int>(type: "int", nullable: false),
+                    Note = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    AuditSessionId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_inventory_audit_items", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_inventory_audit_items_audit_sessions_AuditSessionId",
+                        column: x => x.AuditSessionId,
+                        principalTable: "audit_sessions",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_inventory_audit_items_products_ProductId",
                         column: x => x.ProductId,
                         principalTable: "products",
                         principalColumn: "Id",
@@ -269,8 +327,23 @@ namespace Manage_Store.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateIndex(
+                name: "IX_audit_sessions_UserId",
+                table: "audit_sessions",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_inventory_ProductId",
                 table: "inventory",
+                column: "ProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_inventory_audit_items_AuditSessionId",
+                table: "inventory_audit_items",
+                column: "AuditSessionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_inventory_audit_items_ProductId",
+                table: "inventory_audit_items",
                 column: "ProductId");
 
             migrationBuilder.CreateIndex(
@@ -321,10 +394,16 @@ namespace Manage_Store.Migrations
                 name: "inventory");
 
             migrationBuilder.DropTable(
+                name: "inventory_audit_items");
+
+            migrationBuilder.DropTable(
                 name: "order_items");
 
             migrationBuilder.DropTable(
                 name: "payments");
+
+            migrationBuilder.DropTable(
+                name: "audit_sessions");
 
             migrationBuilder.DropTable(
                 name: "products");

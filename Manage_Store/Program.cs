@@ -2,6 +2,8 @@
 using Manage_Store.Services;
 using Manage_Store.Services.Impl;
 using Microsoft.EntityFrameworkCore;
+using QuestPDF.Infrastructure;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +13,9 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Dang ký QuestPDF
+QuestPDF.Settings.License = LicenseType.Community;
 
 // Đăng ký DbContext
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -22,6 +27,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // Đăng ký DI cho Service
 builder.Services.AddScoped<IAuth, AuthImpl>();
 builder.Services.AddScoped<IUserService, UserServiceImpl>();
+builder.Services.AddScoped<IInventory, InventoryService>();
+builder.Services.AddScoped<IAuditService, AuditServiceImpl>();
 
 var app = builder.Build();
 
