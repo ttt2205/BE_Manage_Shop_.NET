@@ -23,17 +23,19 @@ namespace Manage_Store.Services.Impl
                 var totalItems = await _context.Suppliers.CountAsync();
                 var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
 
+                // FIX: Không dùng Builder trong Select - dùng object initializer trực tiếp
                 var suppliers = await _context.Suppliers
                     .OrderBy(s => s.Id)
                     .Skip((page - 1) * pageSize)
                     .Take(pageSize)
-                    .Select(s => SupplierDto.Builder()
-                        .WithId(s.Id)
-                        .WithName(s.Name)
-                        .WithPhone(s.Phone)
-                        .WithEmail(s.Email)
-                        .WithAddress(s.Address)
-                        .Build())
+                    .Select(s => new SupplierDto
+                    {
+                        Id = s.Id,
+                        Name = s.Name,
+                        Phone = s.Phone,
+                        Email = s.Email,
+                        Address = s.Address
+                    })
                     .ToListAsync();
 
                 return ApiResPagination<List<SupplierDto>>.Builder()
@@ -75,13 +77,15 @@ namespace Manage_Store.Services.Impl
                         .Build();
                 }
 
-                var dto = SupplierDto.Builder()
-                    .WithId(supplier.Id)
-                    .WithName(supplier.Name)
-                    .WithPhone(supplier.Phone)
-                    .WithEmail(supplier.Email)
-                    .WithAddress(supplier.Address)
-                    .Build();
+                // FIX: Tạo DTO sau khi query - không trong Select
+                var dto = new SupplierDto
+                {
+                    Id = supplier.Id,
+                    Name = supplier.Name,
+                    Phone = supplier.Phone,
+                    Email = supplier.Email,
+                    Address = supplier.Address
+                };
 
                 return ApiResponse<SupplierDto>.Builder()
                     .WithSuccess(true)
@@ -115,13 +119,14 @@ namespace Manage_Store.Services.Impl
                 _context.Suppliers.Add(supplier);
                 await _context.SaveChangesAsync();
 
-                var dto = SupplierDto.Builder()
-                    .WithId(supplier.Id)
-                    .WithName(supplier.Name)
-                    .WithPhone(supplier.Phone)
-                    .WithEmail(supplier.Email)
-                    .WithAddress(supplier.Address)
-                    .Build();
+                var dto = new SupplierDto
+                {
+                    Id = supplier.Id,
+                    Name = supplier.Name,
+                    Phone = supplier.Phone,
+                    Email = supplier.Email,
+                    Address = supplier.Address
+                };
 
                 return ApiResponse<SupplierDto>.Builder()
                     .WithSuccess(true)
@@ -162,13 +167,14 @@ namespace Manage_Store.Services.Impl
 
                 await _context.SaveChangesAsync();
 
-                var dto = SupplierDto.Builder()
-                    .WithId(supplier.Id)
-                    .WithName(supplier.Name)
-                    .WithPhone(supplier.Phone)
-                    .WithEmail(supplier.Email)
-                    .WithAddress(supplier.Address)
-                    .Build();
+                var dto = new SupplierDto
+                {
+                    Id = supplier.Id,
+                    Name = supplier.Name,
+                    Phone = supplier.Phone,
+                    Email = supplier.Email,
+                    Address = supplier.Address
+                };
 
                 return ApiResponse<SupplierDto>.Builder()
                     .WithSuccess(true)
