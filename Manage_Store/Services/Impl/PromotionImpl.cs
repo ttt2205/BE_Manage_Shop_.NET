@@ -34,6 +34,7 @@ namespace Manage_Store.Services.Impl
                 MinOrderAmount = promotionReq.MinOrderAmount,
                 UsageLimit = promotionReq.UsageLimit,
                 UsedCount = promotionReq.UsedCount,
+                Status = promotionReq.Status
             };
 
             // Thêm vào DbContext
@@ -63,22 +64,38 @@ namespace Manage_Store.Services.Impl
 
         public async Task<Promotion> UpdateAsync(int id, PromotionReq promotionReq)
         {
-           var promotion = new Promotion
+            // 🔍 Tìm bản ghi khuyến mãi theo ID
+            var promotion = await _context.Promotions.FindAsync(id);
+            if (promotion == null)
             {
-                PromoCode = promotionReq.PromoCode,
-                Description = promotionReq.Description,
-                DiscountType = promotionReq.DiscountType,
-                DiscountValue = promotionReq.DiscountValue,
-                StartDate = promotionReq.StartDate,
-                EndDate = promotionReq.EndDate,
-                MinOrderAmount = promotionReq.MinOrderAmount,
-                UsageLimit = promotionReq.UsageLimit,
-                UsedCount = promotionReq.UsedCount,
-            };
-            await _context.SaveChangesAsync();
+                throw new Exception($"Không tìm thấy khuyến mãi có ID = {id}");
+            }
 
-            return promotion;
+            // ✏️ Cập nhật các trường
+            promotion.PromoCode = promotionReq.PromoCode;
+            promotion.Description = promotionReq.Description;
+            promotion.DiscountType = promotionReq.DiscountType;
+            promotion.DiscountValue = promotionReq.DiscountValue;
+            promotion.StartDate = promotionReq.StartDate;
+            promotion.EndDate = promotionReq.EndDate;
+            promotion.MinOrderAmount = promotionReq.MinOrderAmount;
+            promotion.UsageLimit = promotionReq.UsageLimit;
+            promotion.UsedCount = promotionReq.UsedCount;
+            promotion.Status = promotionReq.Status;
+            try
+            {
+                _context.Entry(promotion).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+
+                return promotion;
+            }
+            catch (DbUpdateException ex)
+            {
+                Console.WriteLine($"❌ Lỗi cập nhật khuyến mãi: {ex.InnerException?.Message}");
+                throw new Exception($"Không thể cập nhật khuyến mãi (ID={id}): {ex.InnerException?.Message}");
+            }
         }
+
 
         public async Task DeleteAsync(int id)
         {

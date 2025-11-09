@@ -25,5 +25,7 @@ namespace Manage_Store.Models.Requests
         public int UsageLimit { get; set; } = 0;
         public int UsedCount { get; set; } = 0;
 
+        public string Status { get; set; }
+
     }
 }

@@ -73,7 +73,7 @@ namespace Manage_Store.Services.Impl
                 }
             }
 
-            order.TotalAmount = totalAmount;
+            order.TotalAmount = totalAmount - discountAmount;
             order.DiscountAmount = discountAmount;
 
             _context.Orders.Add(order);
@@ -95,8 +95,14 @@ namespace Manage_Store.Services.Impl
 
         public async Task<List<Order>> GetAllAsync()
         {
-            return await _context.Orders.ToListAsync();
+            return await _context.Orders
+                .Include(o => o.Customer)
+                .Include(o => o.User)
+                .Include(o => o.Promotion)
+                .Include(o => o.Items) // nếu bạn muốn load các item trong đơn
+                .ToListAsync();
         }
+
 
 
         public async Task<Order> GetOrderAsync(int id)

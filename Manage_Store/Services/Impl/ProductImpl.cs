@@ -46,7 +46,13 @@ namespace Manage_Store.Services.Impl
 
         public async Task<List<Product>> GetAllAsync()
         {
-            return await _context.Products.ToListAsync();
+            var products = await _context.Products
+                .Include(p => p.Category)
+                .Include(p => p.Supplier)
+                .ToListAsync();
+
+            return products;
+
         }
 
         public async Task<Product> GetProductAsync(int id)
