@@ -14,6 +14,16 @@ namespace Manage_Store.Services.Impl
             _context = context;
         }
 
+        public async Task<IEnumerable<AuditSessions>> GetAllAuditSessionsAsync()
+        {
+            
+            return await _context.AuditSessions
+                .Include(s => s.User)
+                .OrderByDescending(s => s.StartDate)
+                .AsNoTracking()
+                .ToListAsync();
+        }
+
         public async Task<AuditSessions> StartAuditSessionAsync(CreateAuditSessionRequest request, int userId)
         {
             var existingSession = await _context.AuditSessions

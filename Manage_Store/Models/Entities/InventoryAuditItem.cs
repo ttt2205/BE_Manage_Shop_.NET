@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace Manage_Store.Models.Entities
 {
@@ -28,6 +29,8 @@ namespace Manage_Store.Models.Entities
 
         // Navigation
         public Product? Product { get; set; }
+        [JsonIgnore]
+        [ForeignKey("SessionId")]
         public AuditSessions? AuditSession { get; set; }
     }
 }

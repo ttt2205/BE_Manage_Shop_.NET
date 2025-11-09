@@ -21,6 +21,27 @@ namespace Manage_Store.Controllers
             _logger = logger;
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAllSessions()
+        {
+            try
+            {
+                var sessions = await _auditService.GetAllAuditSessionsAsync();
+                var response = ApiResponse<object>.Builder()
+                    .WithSuccess(true)
+                    .WithStatus(200)
+                    .WithMessage("Lấy lịch sử kiểm kê thành công")
+                    .WithData(sessions)
+                    .Build();
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi khi lấy lịch sử kiểm kê.");
+                return StatusCode(500, ApiResponse<object>.Builder().WithSuccess(false).WithStatus(500).WithMessage("Lỗi máy chủ nội bộ.").Build());
+            }
+        }
+
         [HttpPost("start")]
         public async Task<IActionResult> StartSession([FromBody] CreateAuditSessionRequest request)
         {
@@ -112,8 +133,19 @@ namespace Manage_Store.Controllers
         public async Task<IActionResult> GetSessionById(int id)
         {
             try
-            {
-                return StatusCode(501, ApiResponse<object>.Builder().WithSuccess(false).WithStatus(501).WithMessage("Endpoint chưa được triển khai.").Build());
+            {   
+                var session = await _auditService.GetAuditSessionDetailsAsync(id);
+                if (session == null)
+                {
+                    return NotFound(ApiResponse<object>.Builder().WithSuccess(false).WithStatus(404).WithMessage($"Không tìm thấy phiên kiểm kê ID: {id}").Build());
+                }
+                var response = ApiResponse<object>.Builder()
+                    .WithSuccess(true)
+                    .WithStatus(200)
+                    .WithMessage("Lấy chi tiết phiên kiểm kê thành công.")
+                    .WithData(session)
+                    .Build();
+                return Ok(response);
             }
             catch (Exception ex)
             {

@@ -17,7 +17,11 @@ namespace Manage_Store.Services.Impl
         public async Task<IEnumerable<Inventory>> GetAllInventoryAsync()
         {
             return await _context.Set<Inventory>()
-                                 .Include(i => i.Product)
+                                 .Include(i => i.Product)           
+                                    .ThenInclude(p => p.Category)
+                                 .Include(i => i.Product)          
+                                    .ThenInclude(p => p.Supplier)
+                                 .AsNoTracking()
                                  .ToListAsync();
         }
 

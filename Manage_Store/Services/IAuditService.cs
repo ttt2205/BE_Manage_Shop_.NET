@@ -5,6 +5,8 @@ namespace Manage_Store.Services
 {
     public interface IAuditService
     {
+
+        Task<IEnumerable<AuditSessions>> GetAllAuditSessionsAsync();
         Task<AuditSessions> StartAuditSessionAsync(CreateAuditSessionRequest request, int userId);
     
         Task<InventoryAuditItem> SubmitAuditItemAsync(SubmitAuditItemRequest request);
