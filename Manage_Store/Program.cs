@@ -22,6 +22,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // Đăng ký DI cho Service
 builder.Services.AddScoped<IAuth, AuthImpl>();
 builder.Services.AddScoped<IUserService, UserServiceImpl>();
+builder.Services.AddScoped<ISupplierService, SupplierServiceImpl>();
+builder.Services.AddScoped<IInventoryService, InventoryServiceImpl>();
 
 var app = builder.Build();
 
