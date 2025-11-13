@@ -7,21 +7,24 @@ namespace Manage_Store.Models.Entities
     public class Order
     {
         [Key]
+        [Column("id")]
         public int Id { get; set; }
-
+        [Column("customer_id")]
         public int? CustomerId { get; set; }
+        [Column("user_id")]
         public int? UserId { get; set; }
+        [Column("promo_id")]
         public int? PromoId { get; set; }
-
+        [Column("order_date")]
         public DateTime OrderDate { get; set; } = DateTime.Now;
 
-        [Column(TypeName = "enum('pending','paid','canceled')")]
+        [Column("status", TypeName = "enum('pending','paid','canceled')")]
         public string Status { get; set; } = "pending";
 
-        [Column(TypeName = "decimal(10,2)")]
+        [Column("total_amount", TypeName = "decimal(10,2)")]
         public decimal TotalAmount { get; set; }
 
-        [Column(TypeName = "decimal(10,2)")]
+        [Column("discount_amount", TypeName = "decimal(10,2)")]
         public decimal DiscountAmount { get; set; } = 0;
 
         // Navigation

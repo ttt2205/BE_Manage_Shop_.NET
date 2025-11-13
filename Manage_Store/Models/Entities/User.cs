@@ -7,21 +7,25 @@ namespace Manage_Store.Models.Entities
     public class User
     {
         [Key]
+        [Column("id")]
         public int Id { get; set; }
 
-        [Required, StringLength(50)]
+        [Column("username")]
         public string Username { get; set; } = string.Empty;
 
-        [Required, StringLength(255)]
+        [Column("password")]
         public string Password { get; set; } = string.Empty;
 
-        [StringLength(100)]
+        [Column("full_name")]
         public string? FullName { get; set; }
 
-        [Required]
-        [Column(TypeName = "enum('admin','staff')")]
+        [Column("role", TypeName = "enum('admin','staff')")]
         public string Role { get; set; } = "staff";
 
+        [Column("created_at")]
         public DateTime CreatedAt { get; set; } = DateTime.Now;
+
+        // Navigation
+        public ICollection<Order>? Orders { get; set; }
     }
 }
