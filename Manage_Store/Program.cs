@@ -53,6 +53,8 @@ builder.Services.AddScoped<IUserService, UserServiceImpl>();
 builder.Services.AddScoped<IStatistics, StatisticsImpl>();
 builder.Services.AddScoped<IInventory, InventoryService>();
 builder.Services.AddScoped<IAuditService, AuditServiceImpl>();
+builder.Services.AddScoped<ISupplierService, SupplierServiceImpl>();
+// builder.Services.AddScoped<IInventoryService, InventoryServiceImpl>();
 
 var app = builder.Build();
 
@@ -62,6 +64,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseCors("AllowLocalhost3000");
 
 app.UseHttpsRedirection();
 
