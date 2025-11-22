@@ -19,5 +19,7 @@ namespace Manage_Store.Data
         public DbSet<Order> Orders => Set<Order>();
         public DbSet<OrderItem> OrderItems => Set<OrderItem>();
         public DbSet<Payment> Payments => Set<Payment>();
+        public DbSet<AuditSessions> AuditSessions => Set<AuditSessions>();
+        public DbSet<InventoryAuditItem> InventoryAuditItems => Set<InventoryAuditItem>();
     }
 }
