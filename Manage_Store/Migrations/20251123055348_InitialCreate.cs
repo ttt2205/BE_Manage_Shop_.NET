@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Manage_Store.Migrations
 {
     /// <inheritdoc />
-    public partial class AddAuditTables : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -34,21 +34,21 @@ namespace Manage_Store.Migrations
                 name: "customers",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Name = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
+                    name = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Phone = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: true)
+                    phone = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Email = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: true)
+                    email = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Address = table.Column<string>(type: "longtext", nullable: true)
+                    address = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    created_at = table.Column<DateTime>(type: "datetime(6)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_customers", x => x.Id);
+                    table.PrimaryKey("PK_customers", x => x.id);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -104,21 +104,21 @@ namespace Manage_Store.Migrations
                 name: "users",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Username = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
+                    username = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Password = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
+                    password = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    FullName = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: true)
+                    full_name = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Role = table.Column<string>(type: "enum('admin','staff')", nullable: false)
+                    role = table.Column<string>(type: "enum('admin','staff')", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    created_at = table.Column<DateTime>(type: "datetime(6)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_users", x => x.Id);
+                    table.PrimaryKey("PK_users", x => x.id);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -126,30 +126,30 @@ namespace Manage_Store.Migrations
                 name: "products",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    CategoryId = table.Column<int>(type: "int", nullable: true),
-                    SupplierId = table.Column<int>(type: "int", nullable: true),
-                    ProductName = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
+                    category_id = table.Column<int>(type: "int", nullable: true),
+                    supplier_id = table.Column<int>(type: "int", nullable: true),
+                    product_name = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Barcode = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: true)
+                    barcode = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Price = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
-                    Unit = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false)
+                    price = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
+                    unit = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    created_at = table.Column<DateTime>(type: "datetime(6)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_products", x => x.Id);
+                    table.PrimaryKey("PK_products", x => x.id);
                     table.ForeignKey(
-                        name: "FK_products_categories_CategoryId",
-                        column: x => x.CategoryId,
+                        name: "FK_products_categories_category_id",
+                        column: x => x.category_id,
                         principalTable: "categories",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_products_suppliers_SupplierId",
-                        column: x => x.SupplierId,
+                        name: "FK_products_suppliers_supplier_id",
+                        column: x => x.supplier_id,
                         principalTable: "suppliers",
                         principalColumn: "Id");
                 })
@@ -176,7 +176,7 @@ namespace Manage_Store.Migrations
                         name: "FK_audit_sessions_users_UserId",
                         column: x => x.UserId,
                         principalTable: "users",
-                        principalColumn: "Id",
+                        principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
@@ -185,36 +185,35 @@ namespace Manage_Store.Migrations
                 name: "orders",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    CustomerId = table.Column<int>(type: "int", nullable: true),
-                    UserId = table.Column<int>(type: "int", nullable: true),
-                    PromoId = table.Column<int>(type: "int", nullable: true),
-                    OrderDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    Status = table.Column<string>(type: "enum('pending','paid','canceled')", nullable: false)
+                    customer_id = table.Column<int>(type: "int", nullable: true),
+                    user_id = table.Column<int>(type: "int", nullable: true),
+                    promotion_id = table.Column<int>(type: "int", nullable: true),
+                    order_date = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    status = table.Column<string>(type: "enum('pending','paid','canceled')", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    TotalAmount = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
-                    DiscountAmount = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
-                    PromotionId = table.Column<int>(type: "int", nullable: true)
+                    total_amount = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
+                    discount_amount = table.Column<decimal>(type: "decimal(10,2)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_orders", x => x.Id);
+                    table.PrimaryKey("PK_orders", x => x.id);
                     table.ForeignKey(
-                        name: "FK_orders_customers_CustomerId",
-                        column: x => x.CustomerId,
+                        name: "FK_orders_customers_customer_id",
+                        column: x => x.customer_id,
                         principalTable: "customers",
-                        principalColumn: "Id");
+                        principalColumn: "id");
                     table.ForeignKey(
-                        name: "FK_orders_promotions_PromotionId",
-                        column: x => x.PromotionId,
+                        name: "FK_orders_promotions_promotion_id",
+                        column: x => x.promotion_id,
                         principalTable: "promotions",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_orders_users_UserId",
-                        column: x => x.UserId,
+                        name: "FK_orders_users_user_id",
+                        column: x => x.user_id,
                         principalTable: "users",
-                        principalColumn: "Id");
+                        principalColumn: "id");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -235,7 +234,7 @@ namespace Manage_Store.Migrations
                         name: "FK_inventory_products_ProductId",
                         column: x => x.ProductId,
                         principalTable: "products",
-                        principalColumn: "Id",
+                        principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
@@ -252,22 +251,22 @@ namespace Manage_Store.Migrations
                     ActualQuantity = table.Column<int>(type: "int", nullable: false),
                     Difference = table.Column<int>(type: "int", nullable: false),
                     Note = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    AuditSessionId = table.Column<int>(type: "int", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_inventory_audit_items", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_inventory_audit_items_audit_sessions_AuditSessionId",
-                        column: x => x.AuditSessionId,
+                        name: "FK_inventory_audit_items_audit_sessions_SessionId",
+                        column: x => x.SessionId,
                         principalTable: "audit_sessions",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_inventory_audit_items_products_ProductId",
                         column: x => x.ProductId,
                         principalTable: "products",
-                        principalColumn: "Id",
+                        principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
@@ -276,28 +275,28 @@ namespace Manage_Store.Migrations
                 name: "order_items",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    OrderId = table.Column<int>(type: "int", nullable: false),
-                    ProductId = table.Column<int>(type: "int", nullable: false),
-                    Quantity = table.Column<int>(type: "int", nullable: false),
-                    Price = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
-                    Subtotal = table.Column<decimal>(type: "decimal(10,2)", nullable: false)
+                    order_id = table.Column<int>(type: "int", nullable: false),
+                    product_id = table.Column<int>(type: "int", nullable: false),
+                    quantity = table.Column<int>(type: "int", nullable: false),
+                    price = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
+                    subtotal = table.Column<decimal>(type: "decimal(10,2)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_order_items", x => x.Id);
+                    table.PrimaryKey("PK_order_items", x => x.id);
                     table.ForeignKey(
-                        name: "FK_order_items_orders_OrderId",
-                        column: x => x.OrderId,
+                        name: "FK_order_items_orders_order_id",
+                        column: x => x.order_id,
                         principalTable: "orders",
-                        principalColumn: "Id",
+                        principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_order_items_products_ProductId",
-                        column: x => x.ProductId,
+                        name: "FK_order_items_products_product_id",
+                        column: x => x.product_id,
                         principalTable: "products",
-                        principalColumn: "Id",
+                        principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
@@ -321,7 +320,7 @@ namespace Manage_Store.Migrations
                         name: "FK_payments_orders_OrderId",
                         column: x => x.OrderId,
                         principalTable: "orders",
-                        principalColumn: "Id",
+                        principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
@@ -337,39 +336,39 @@ namespace Manage_Store.Migrations
                 column: "ProductId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_inventory_audit_items_AuditSessionId",
-                table: "inventory_audit_items",
-                column: "AuditSessionId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_inventory_audit_items_ProductId",
                 table: "inventory_audit_items",
                 column: "ProductId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_order_items_OrderId",
+                name: "IX_inventory_audit_items_SessionId",
+                table: "inventory_audit_items",
+                column: "SessionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_order_items_order_id",
                 table: "order_items",
-                column: "OrderId");
+                column: "order_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_order_items_ProductId",
+                name: "IX_order_items_product_id",
                 table: "order_items",
-                column: "ProductId");
+                column: "product_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_orders_CustomerId",
+                name: "IX_orders_customer_id",
                 table: "orders",
-                column: "CustomerId");
+                column: "customer_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_orders_PromotionId",
+                name: "IX_orders_promotion_id",
                 table: "orders",
-                column: "PromotionId");
+                column: "promotion_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_orders_UserId",
+                name: "IX_orders_user_id",
                 table: "orders",
-                column: "UserId");
+                column: "user_id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_payments_OrderId",
@@ -377,14 +376,14 @@ namespace Manage_Store.Migrations
                 column: "OrderId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_products_CategoryId",
+                name: "IX_products_category_id",
                 table: "products",
-                column: "CategoryId");
+                column: "category_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_products_SupplierId",
+                name: "IX_products_supplier_id",
                 table: "products",
-                column: "SupplierId");
+                column: "supplier_id");
         }
 
         /// <inheritdoc />

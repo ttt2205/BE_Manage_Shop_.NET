@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Manage_Store.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("/api/v1/supplier")]
     [ApiController]
     public class SupplierController : ControllerBase
     {

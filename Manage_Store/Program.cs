@@ -23,11 +23,9 @@ builder.Services.AddCors(options =>
 });
 
 // Add services to the container.
-
-
 builder.Services.AddControllers();
 
-// ✅ Ghi đè phản hồi mặc định khi ModelState không hợp lệ
+// Ghi đè phản hồi mặc định khi ModelState không hợp lệ
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
     options.InvalidModelStateResponseFactory = context =>

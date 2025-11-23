@@ -132,7 +132,6 @@ namespace Manage_Store.Migrations
                 });
 
             modelBuilder.Entity("Manage_Store.Models.Entities.InventoryAuditItem", b =>
-            // modelBuilder.Entity("Manage_Store.Models.Entities.Order", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -189,12 +188,9 @@ namespace Manage_Store.Migrations
                         .HasColumnType("datetime(6)")
                         .HasColumnName("order_date");
 
-                    b.Property<int?>("PromoId")
-                        .HasColumnType("int")
-                        .HasColumnName("promo_id");
-
                     b.Property<int?>("PromotionId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("promotion_id");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -448,11 +444,6 @@ namespace Manage_Store.Migrations
                     b.ToTable("users");
                 });
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-            modelBuilder.Entity("Manage_Store.Models.Entities.Inventory", b =>
-                {
-=======
             modelBuilder.Entity("Manage_Store.Models.Entities.AuditSessions", b =>
                 {
                     b.HasOne("Manage_Store.Models.Entities.User", "User")
@@ -466,11 +457,6 @@ namespace Manage_Store.Migrations
 
             modelBuilder.Entity("Manage_Store.Models.Entities.Inventory", b =>
                 {
->>>>>>> origin/lvttrung
-=======
-            modelBuilder.Entity("Manage_Store.Models.Entities.Inventory", b =>
-                {
->>>>>>> origin/feature/suplier
                     b.HasOne("Manage_Store.Models.Entities.Product", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
@@ -480,21 +466,9 @@ namespace Manage_Store.Migrations
                     b.Navigation("Product");
                 });
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-            modelBuilder.Entity("Manage_Store.Models.Entities.Order", b =>
-                {
-                    b.HasOne("Manage_Store.Models.Entities.Customer", "Customer")
-                        .WithMany("Orders")
-=======
             modelBuilder.Entity("Manage_Store.Models.Entities.InventoryAuditItem", b =>
                 {
                     b.HasOne("Manage_Store.Models.Entities.Product", "Product")
-=======
-            modelBuilder.Entity("Manage_Store.Models.Entities.Order", b =>
-                {
-                    b.HasOne("Manage_Store.Models.Entities.Customer", "Customer")
->>>>>>> origin/feature/suplier
                         .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -514,8 +488,7 @@ namespace Manage_Store.Migrations
             modelBuilder.Entity("Manage_Store.Models.Entities.Order", b =>
                 {
                     b.HasOne("Manage_Store.Models.Entities.Customer", "Customer")
-                        .WithMany()
->>>>>>> origin/lvttrung
+                        .WithMany("Orders")
                         .HasForeignKey("CustomerId");
 
                     b.HasOne("Manage_Store.Models.Entities.Promotion", "Promotion")
@@ -523,14 +496,7 @@ namespace Manage_Store.Migrations
                         .HasForeignKey("PromotionId");
 
                     b.HasOne("Manage_Store.Models.Entities.User", "User")
-<<<<<<< HEAD
-<<<<<<< HEAD
                         .WithMany("Orders")
-=======
-=======
->>>>>>> origin/feature/suplier
-                        .WithMany()
->>>>>>> origin/lvttrung
                         .HasForeignKey("UserId");
 
                     b.Navigation("Customer");
@@ -549,14 +515,7 @@ namespace Manage_Store.Migrations
                         .IsRequired();
 
                     b.HasOne("Manage_Store.Models.Entities.Product", "Product")
-<<<<<<< HEAD
-<<<<<<< HEAD
                         .WithMany("OrderItems")
-=======
-=======
->>>>>>> origin/feature/suplier
-                        .WithMany()
->>>>>>> origin/lvttrung
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -592,20 +551,16 @@ namespace Manage_Store.Migrations
                     b.Navigation("Supplier");
                 });
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-            modelBuilder.Entity("Manage_Store.Models.Entities.Customer", b =>
-                {
-                    b.Navigation("Orders");
-=======
             modelBuilder.Entity("Manage_Store.Models.Entities.AuditSessions", b =>
                 {
                     b.Navigation("AuditItems");
->>>>>>> origin/lvttrung
                 });
 
-=======
->>>>>>> origin/feature/suplier
+            modelBuilder.Entity("Manage_Store.Models.Entities.Customer", b =>
+                {
+                    b.Navigation("Orders");
+                });
+
             modelBuilder.Entity("Manage_Store.Models.Entities.Order", b =>
                 {
                     b.Navigation("Items");
