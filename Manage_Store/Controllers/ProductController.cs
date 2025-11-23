@@ -44,24 +44,46 @@ namespace Manage_Store.Controllers
         }
         // get all
         [HttpGet]
-        public async Task<IActionResult> GetAllProduct()
+
+        public async Task<IActionResult> GetAllProduct(
+    [FromQuery] int page = 1,
+    [FromQuery] int pageSize = 10,
+    [FromQuery] string search = null)
         {
-            var products = await _ProductService.GetAllAsync();
-            if (products == null || products.Count == 0)
+            // Lấy toàn bộ danh sách từ service
+            var allProducts = await _ProductService.GetAllAsync(search);
+            if (allProducts == null || allProducts.Count == 0)
             {
-                return NotFound(ApiResponse<string>.Builder()
+                return NotFound(ApiResPagination<string>.Builder()
                     .WithSuccess(false)
                     .WithStatus(404)
-                    .WithMessage("Không có dữ liệu category")
+                    .WithMessage("Không có dữ liệu sản phẩm")
                     .Build());
             }
-            return Ok(ApiResponse<List<Product>>.Builder()
+            var totalItems = allProducts.Count;
+            var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+            // Lấy dữ liệu cho trang hiện tại
+            var pagedProducts = allProducts
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+            var meta = new Meta
+            {
+                CurrentPage = page,
+                PageSize = pageSize,
+                TotalItems = totalItems,
+                TotalPage = totalPages
+            };
+
+            return Ok(ApiResPagination<List<Product>>.Builder()
                 .WithSuccess(true)
                 .WithStatus(200)
-                .WithMessage("Lấy danh sách category thành công")
-                .WithData(products)
+                .WithMessage("Lấy danh sách sản phẩm thành công")
+                .WithResult(pagedProducts)
+                .WithMeta(meta)
                 .Build());
         }
+
 
         // get product by id
 

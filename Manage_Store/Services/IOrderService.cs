@@ -15,6 +15,7 @@ namespace Manage_Store.Services
 
         Task<Order> UpdateStatus(int id, String status);
 
+        Task<List<Order>> GetOrdersByUserAsync(int userId);
         // Task DeleteAsync(int id);
     }
 }

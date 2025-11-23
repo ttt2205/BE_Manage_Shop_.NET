@@ -112,6 +112,13 @@ namespace Manage_Store.Controllers
                 .Build());
         }
 
+        // GET: api/orders/user/{userId}
+        [HttpGet("user/{userId}")]
+        public async Task<ActionResult<List<Order>>> GetByUser(int userId)
+        {
+            var orders = await _orderService.GetOrdersByUserAsync(userId);
+            return Ok(orders);
+        }
 
     }
 }

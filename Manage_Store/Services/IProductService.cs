@@ -8,7 +8,7 @@ namespace Manage_Store.Services
     {
         Task<Product> CreateAsync(ProductReq ProductReq);
 
-        Task<List<Product>> GetAllAsync();
+        Task<List<Product>> GetAllAsync(string search = null);
 
         Task<Product> GetProductAsync(int id);
 

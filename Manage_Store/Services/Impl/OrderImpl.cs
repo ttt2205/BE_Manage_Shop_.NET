@@ -23,53 +23,37 @@ namespace Manage_Store.Services.Impl
                 PromotionId = orderReq.PromotionId,
                 OrderDate = DateTime.Now,
                 Status = orderReq.Status ?? "pending",
-                Items = new List<OrderItem>()
+                Items = orderReq.Items.Select(i => new OrderItem
+                {
+                    ProductId = i.ProductId,
+                    Quantity = i.Quantity,
+                    Price = i.Price,
+                    Subtotal = i.Price * i.Quantity
+                }).ToList()
             };
 
-            decimal totalAmount = 0;
-
-            // Tính tổng tiền từ các sản phẩm
-            foreach (var itemDto in orderReq.Items)
-            {
-                var orderItem = new OrderItem
-                {
-                    ProductId = itemDto.ProductId,
-                    Quantity = itemDto.Quantity,
-                    Price = itemDto.Price,
-                    Subtotal = itemDto.Price * itemDto.Quantity
-                };
-
-                totalAmount += orderItem.Subtotal;
-                order.Items.Add(orderItem);
-            }
-
+            // Tính tổng tiền
+            decimal totalAmount = order.Items.Sum(i => i.Subtotal);
             decimal discountAmount = 0;
 
-            // Nếu có khuyến mãi
             if (orderReq.PromotionId.HasValue)
             {
                 var promo = await _context.Promotions
                     .FirstOrDefaultAsync(p => p.Id == orderReq.PromotionId.Value);
 
-                if (promo != null)
+                if (promo != null && totalAmount >= promo.MinOrderAmount)
                 {
-                    // ✅ Kiểm tra điều kiện giá trị tối thiểu
-                    if (totalAmount >= promo.MinOrderAmount)
+                    discountAmount = promo.DiscountType switch
                     {
-                        if (promo.DiscountType == "percent")
-                            discountAmount = totalAmount * (promo.DiscountValue / 100);
-                        else if (promo.DiscountType == "amount")
-                            discountAmount = promo.DiscountValue;
+                        "percent" => totalAmount * (promo.DiscountValue / 100),
+                        "amount" => promo.DiscountValue,
+                        _ => 0
+                    };
 
-                        // Giới hạn discount không vượt tổng
-                        if (discountAmount > totalAmount)
-                            discountAmount = totalAmount;
-                    }
-                    else
-                    {
-                        // ❌ Không đủ điều kiện để áp dụng
-                        discountAmount = 0;
-                    }
+                    if (discountAmount > totalAmount)
+                        discountAmount = totalAmount;
+
+                    promo.UsedCount++;
                 }
             }
 
@@ -79,18 +63,9 @@ namespace Manage_Store.Services.Impl
             _context.Orders.Add(order);
             await _context.SaveChangesAsync();
 
-            // Load các quan hệ
-            // if (order.CustomerId.HasValue)
-            //     await _context.Entry(order).Reference(p => p.Customer).LoadAsync();
-
-            // if (order.UserId.HasValue)
-            //     await _context.Entry(order).Reference(p => p.User).LoadAsync();
-
-            // if (order.PromotionId.HasValue)
-            //     await _context.Entry(order).Reference(p => p.Promotion).LoadAsync();
-
             return order;
         }
+
 
 
         public async Task<List<Order>> GetAllAsync()
@@ -203,5 +178,17 @@ namespace Manage_Store.Services.Impl
 
             return order;
         }
+
+        public async Task<List<Order>> GetOrdersByUserAsync(int userId)
+        {
+            return await _context.Orders
+                .Where(o => o.UserId == userId)
+                .Include(o => o.Customer)
+                .Include(o => o.Promotion)
+                .Include(o => o.Items)
+                    .ThenInclude(i => i.Product)
+                .ToListAsync();
+        }
+
     }
 }
