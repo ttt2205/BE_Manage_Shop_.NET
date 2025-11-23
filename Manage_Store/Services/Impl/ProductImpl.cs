@@ -44,16 +44,25 @@ namespace Manage_Store.Services.Impl
             return product;
         }
 
-        public async Task<List<Product>> GetAllAsync()
+        public async Task<List<Product>> GetAllAsync(string search = null)
         {
-            var products = await _context.Products
+            var query = _context.Products
                 .Include(p => p.Category)
                 .Include(p => p.Supplier)
+                .AsQueryable();
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                query = query.Where(p =>
+                    p.ProductName.Contains(search) ||
+                    p.Category.CategoryName.Contains(search));
+            }
+
+            return await query
+                .OrderBy(p => p.Id)
                 .ToListAsync();
-
-            return products;
-
         }
+
 
         public async Task<Product> GetProductAsync(int id)
         {
