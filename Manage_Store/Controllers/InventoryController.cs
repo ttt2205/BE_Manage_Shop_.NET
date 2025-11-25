@@ -1,11 +1,18 @@
-// File: Controllers/InventoryController.cs
-using Manage_Store.Models.Entities; 
-using Manage_Store.Responses;       
+﻿// Models & Dtos
+using Manage_Store.Models.Dtos;
+using Manage_Store.Models.Entities;
+using Manage_Store.Models.Requests;
+using Manage_Store.Responses;
+// Services
 using Manage_Store.Services;
+using Manage_Store.Services.Documents; // Namespace chứa InventoryPdfDocument
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Manage_Store.Services.Documents;
+using Microsoft.Extensions.Logging;
 using QuestPDF.Fluent;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Manage_Store.Controllers
 {
@@ -13,80 +20,137 @@ namespace Manage_Store.Controllers
     [ApiController]
     public class InventoryController : ControllerBase
     {
-        private readonly IInventory _inventory;
+        // Sử dụng IInventoryService làm chuẩn chung
+        private readonly IInventoryService _inventoryService;
         private readonly ILogger<InventoryController> _logger;
 
-        public InventoryController(IInventory inventory, ILogger<InventoryController> logger)
+        public InventoryController(IInventoryService inventoryService, ILogger<InventoryController> logger)
         {
-            _inventory = inventory;
+            _inventoryService = inventoryService;
             _logger = logger;
         }
+
+        // 1. Lấy danh sách (Ưu tiên version có phân trang từ File 1)
         [HttpGet]
-        public async Task<IActionResult> GetAllInventory()
+        public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
             try
             {
-                var inventoryItems = await _inventory.GetAllInventoryAsync();
+                var result = await _inventoryService.GetAllAsync(page, pageSize);
 
-                var response = ApiResponse<IEnumerable<Inventory>>.Builder()
-                    .WithSuccess(true)
-                    .WithStatus(StatusCodes.Status200OK) // 200
-                    .WithMessage("Lấy danh sách tồn kho thành công.")
-                    .WithData(inventoryItems)
-                    .Build();
-
-                return Ok(response);
+                // Giả định result từ Service trả về object có thuộc tính Status (như File 1)
+                // Nếu Service trả về data thô, hãy dùng ApiResponse.Builder như bên dưới
+                return StatusCode(result.Status, result);
             }
             catch (Exception ex)
             {
-                // 1. Ghi lại lỗi
                 _logger.LogError(ex, "Có lỗi xảy ra khi lấy danh sách tồn kho.");
-
-                // 2. Xây dựng response thất bại bằng Builder
-                // Chúng ta dùng <object> vì không có dữ liệu data cụ thể để trả về
-                var errorResponse = ApiResponse<object>.Builder()
-                    .WithSuccess(false)
-                    .WithStatus(StatusCodes.Status500InternalServerError) // 500
-                    .WithMessage("Có lỗi máy chủ nội bộ. Vui lòng thử lại sau.")
-                    .WithData(null) // Không có dữ liệu khi lỗi
-                    .Build();
-
-                // 3. Trả về 500 với body là errorResponse
-                return StatusCode(StatusCodes.Status500InternalServerError, errorResponse);
+                return StatusCode(500, new { success = false, message = "Internal Server Error" });
             }
         }
 
-        [HttpGet("export-pdf")] // Route: GET /api/Inventory/export-pdf
+        // 2. Lấy chi tiết theo ProductId
+        [HttpGet("product/{productId}")]
+        public async Task<IActionResult> GetByProductId(int productId)
+        {
+            var result = await _inventoryService.GetByProductIdAsync(productId);
+            return StatusCode(result.Status, result);
+        }
+
+        // 3. Cập nhật tồn kho
+        [HttpPut]
+        public async Task<IActionResult> Update([FromBody] UpdateInventoryRequest request)
+        {
+            var result = await _inventoryService.UpdateInventoryAsync(request);
+            return StatusCode(result.Status, result);
+        }
+
+        // 4. Nhập kho (JSON)
+        [HttpPost("import")]
+        public async Task<IActionResult> Import([FromBody] ImportInventoryRequest request)
+        {
+            var result = await _inventoryService.ImportInventoryAsync(request);
+            return StatusCode(result.Status, result);
+        }
+
+        // 5. Báo cáo tồn kho (Theo ngày)
+        [HttpGet("report")]
+        public async Task<IActionResult> GetReport([FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)
+        {
+            var result = await _inventoryService.GetInventoryReportAsync(startDate, endDate);
+            return StatusCode(result.Status, result);
+        }
+
+        // 6. Nhập kho từ Excel (File 1 + Log từ File 2)
+        [HttpPost("import-excel")]
+        public async Task<IActionResult> ImportFromExcel(IFormFile file, [FromForm] int userId)
+        {
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest(new { success = false, message = "No file uploaded" });
+            }
+
+            try
+            {
+                var items = new List<InventoryImportItemDto>();
+
+                // TODO: Implement đọc file Excel (EPPlus/ClosedXML) tại đây
+                // var loadedItems = ...
+
+                var request = new ImportInventoryRequest
+                {
+                    UserId = userId,
+                    Items = items
+                };
+
+                var result = await _inventoryService.ImportInventoryAsync(request);
+                return StatusCode(result.Status, result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi khi import Excel.");
+                return StatusCode(500, new { success = false, message = $"Error: {ex.Message}" });
+            }
+        }
+
+        // 7. Xuất PDF (Từ File 2)
+        [HttpGet("export-pdf")]
         public async Task<IActionResult> ExportInventoryToPdf()
         {
             try
             {
-                // 1. Lấy dữ liệu (giống hệt như GetAll)
-                var inventoryItems = await _inventory.GetAllInventoryAsync();
-                
-                // 2. Tạo instance của lớp Document và truyền dữ liệu vào
-                var document = new InventoryPdfDocument(inventoryItems);
+                // 1. Lấy dữ liệu (Lấy số lượng lớn để in hết báo cáo)
+                var result = await _inventoryService.GetAllAsync(1, 10000);
 
-                // 3. Tạo file PDF trong bộ nhớ
-                // (Bạn cũng có thể dùng GeneratePdfAsync nếu muốn)
+                // --- SỬA LỖI TẠI ĐÂY ---
+                // Thay result.Data bằng result.Result (theo file ApiResPagination bạn gửi)
+                var sourceData = result.Result;
+
+                if (sourceData == null || !sourceData.Any())
+                {
+                    return BadRequest(new { success = false, message = "Không có dữ liệu để xuất PDF" });
+                }
+
+                // 2. Tạo PDF
+                // Lưu ý: InventoryPdfDocument đã được sửa để nhận List<InventoryDto>
+                var document = new InventoryPdfDocument(sourceData);
+
                 byte[] pdfBytes = document.GeneratePdf();
 
-                // 4. Trả về file cho client
-                // Client (trình duyệt) sẽ tự động mở hộp thoại "Save As..."
                 string fileName = $"BaoCao_TonKho_{DateTime.Now:yyyyMMdd_HHmm}.pdf";
-                
                 return File(pdfBytes, "application/pdf", fileName);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Có lỗi xảy ra khi xuất PDF tồn kho.");
-                
-                // Nếu lỗi, trả về JSON lỗi thay vì file
+
+                // Trả về JSON lỗi
                 var errorResponse = ApiResponse<object>.Builder()
                     .WithSuccess(false)
                     .WithStatus(StatusCodes.Status500InternalServerError)
                     .WithMessage("Không thể tạo file PDF do lỗi máy chủ.")
                     .Build();
+
                 return StatusCode(StatusCodes.Status500InternalServerError, errorResponse);
             }
         }

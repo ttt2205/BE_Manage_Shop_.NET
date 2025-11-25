@@ -4,6 +4,7 @@ using Manage_Store.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Manage_Store.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251109084902_InitialCreate")]
+    partial class InitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,69 +24,6 @@ namespace Manage_Store.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
-
-            modelBuilder.Entity("Manage_Store.Models.Entities.AuditSessions", b =>
-            {
-                b.Property<int>("Id")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("int");
-
-                MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                b.Property<DateTime?>("EndDate")
-                    .HasColumnType("datetime(6)");
-
-                b.Property<string>("Note")
-                    .IsRequired()
-                    .HasColumnType("longtext");
-
-                b.Property<DateTime>("StartDate")
-                    .HasColumnType("datetime(6)");
-
-                b.Property<string>("Status")
-                    .IsRequired()
-                    .HasColumnType("enum('in_progress','completed','cancelled')");
-
-                b.Property<int>("UserId")
-                    .HasColumnType("int");
-
-                b.HasKey("Id");
-
-                b.HasIndex("UserId");
-
-                b.ToTable("audit_sessions");
-            });
-            modelBuilder.Entity("Manage_Store.Models.Entities.Category", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime?>("EndDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("Note")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("enum('in_progress','completed','cancelled')");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("audit_sessions");
-                });
 
             modelBuilder.Entity("Manage_Store.Models.Entities.Category", b =>
                 {
@@ -107,31 +47,28 @@ namespace Manage_Store.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("id");
+                        .HasColumnType("int");
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Address")
-                        .HasColumnType("longtext")
-                        .HasColumnName("address");
+                        .HasColumnType("longtext");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)")
-                        .HasColumnName("created_at");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("Email")
-                        .HasColumnType("longtext")
-                        .HasColumnName("email");
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("longtext")
-                        .HasColumnName("name");
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
 
                     b.Property<string>("Phone")
-                        .HasColumnType("longtext")
-                        .HasColumnName("phone");
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)");
 
                     b.HasKey("Id");
 
@@ -162,82 +99,38 @@ namespace Manage_Store.Migrations
                     b.ToTable("inventory");
                 });
 
-            modelBuilder.Entity("Manage_Store.Models.Entities.InventoryAuditItem", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ActualQuantity")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Difference")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Note")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SessionId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SystemQuantity")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductId");
-
-                    b.HasIndex("SessionId");
-
-                    b.ToTable("inventory_audit_items");
-                });
-
             modelBuilder.Entity("Manage_Store.Models.Entities.Order", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("id");
+                        .HasColumnType("int");
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int?>("CustomerId")
-                        .HasColumnType("int")
-                        .HasColumnName("customer_id");
+                        .HasColumnType("int");
 
                     b.Property<decimal>("DiscountAmount")
-                        .HasColumnType("decimal(10,2)")
-                        .HasColumnName("discount_amount");
+                        .HasColumnType("decimal(10,2)");
 
                     b.Property<DateTime>("OrderDate")
-                        .HasColumnType("datetime(6)")
-                        .HasColumnName("order_date");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int?>("PromoId")
-                        .HasColumnType("int")
-                        .HasColumnName("promo_id");
+                        .HasColumnType("int");
 
                     b.Property<int?>("PromotionId")
                         .HasColumnType("int");
 
                     b.Property<string>("Status")
                         .IsRequired()
-                        .HasColumnType("enum('pending','paid','canceled')")
-                        .HasColumnName("status");
+                        .HasColumnType("enum('pending','paid','canceled')");
 
                     b.Property<decimal>("TotalAmount")
-                        .HasColumnType("decimal(10,2)")
-                        .HasColumnName("total_amount");
+                        .HasColumnType("decimal(10,2)");
 
                     b.Property<int?>("UserId")
-                        .HasColumnType("int")
-                        .HasColumnName("user_id");
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -254,30 +147,24 @@ namespace Manage_Store.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("id");
+                        .HasColumnType("int");
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("OrderId")
-                        .HasColumnType("int")
-                        .HasColumnName("order_id");
+                        .HasColumnType("int");
 
                     b.Property<decimal>("Price")
-                        .HasColumnType("decimal(10,2)")
-                        .HasColumnName("price");
+                        .HasColumnType("decimal(10,2)");
 
                     b.Property<int>("ProductId")
-                        .HasColumnType("int")
-                        .HasColumnName("product_id");
+                        .HasColumnType("int");
 
                     b.Property<int>("Quantity")
-                        .HasColumnType("int")
-                        .HasColumnName("quantity");
+                        .HasColumnType("int");
 
                     b.Property<decimal>("Subtotal")
-                        .HasColumnType("decimal(10,2)")
-                        .HasColumnName("subtotal");
+                        .HasColumnType("decimal(10,2)");
 
                     b.HasKey("Id");
 
@@ -320,40 +207,35 @@ namespace Manage_Store.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("id");
+                        .HasColumnType("int");
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Barcode")
-                        .HasColumnType("longtext")
-                        .HasColumnName("barcode");
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
 
                     b.Property<int?>("CategoryId")
-                        .HasColumnType("int")
-                        .HasColumnName("category_id");
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)")
-                        .HasColumnName("created_at");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<decimal>("Price")
-                        .HasColumnType("decimal(10,2)")
-                        .HasColumnName("price");
+                        .HasColumnType("decimal(10,2)");
 
                     b.Property<string>("ProductName")
                         .IsRequired()
-                        .HasColumnType("longtext")
-                        .HasColumnName("product_name");
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
 
                     b.Property<int?>("SupplierId")
-                        .HasColumnType("int")
-                        .HasColumnName("supplier_id");
+                        .HasColumnType("int");
 
                     b.Property<string>("Unit")
                         .IsRequired()
-                        .HasColumnType("longtext")
-                        .HasColumnName("unit");
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)");
 
                     b.HasKey("Id");
 
@@ -445,48 +327,34 @@ namespace Manage_Store.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("id");
+                        .HasColumnType("int");
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)")
-                        .HasColumnName("created_at");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("FullName")
-                        .HasColumnType("longtext")
-                        .HasColumnName("full_name");
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
 
                     b.Property<string>("Password")
                         .IsRequired()
-                        .HasColumnType("longtext")
-                        .HasColumnName("password");
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("Role")
                         .IsRequired()
-                        .HasColumnType("enum('admin','staff')")
-                        .HasColumnName("role");
+                        .HasColumnType("enum('admin','staff')");
 
                     b.Property<string>("Username")
                         .IsRequired()
-                        .HasColumnType("longtext")
-                        .HasColumnName("username");
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
 
                     b.HasKey("Id");
 
                     b.ToTable("users");
-                });
-
-            modelBuilder.Entity("Manage_Store.Models.Entities.AuditSessions", b =>
-                {
-                    b.HasOne("Manage_Store.Models.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Manage_Store.Models.Entities.Inventory", b =>
@@ -500,29 +368,10 @@ namespace Manage_Store.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("Manage_Store.Models.Entities.InventoryAuditItem", b =>
-                {
-                    b.HasOne("Manage_Store.Models.Entities.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Manage_Store.Models.Entities.AuditSessions", "AuditSession")
-                        .WithMany("AuditItems")
-                        .HasForeignKey("SessionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("AuditSession");
-
-                    b.Navigation("Product");
-                });
-
             modelBuilder.Entity("Manage_Store.Models.Entities.Order", b =>
                 {
                     b.HasOne("Manage_Store.Models.Entities.Customer", "Customer")
-                        .WithMany("Orders")
+                        .WithMany()
                         .HasForeignKey("CustomerId");
 
                     b.HasOne("Manage_Store.Models.Entities.Promotion", "Promotion")
@@ -530,7 +379,7 @@ namespace Manage_Store.Migrations
                         .HasForeignKey("PromotionId");
 
                     b.HasOne("Manage_Store.Models.Entities.User", "User")
-                        .WithMany("Orders")
+                        .WithMany()
                         .HasForeignKey("UserId");
 
                     b.Navigation("Customer");
@@ -549,7 +398,7 @@ namespace Manage_Store.Migrations
                         .IsRequired();
 
                     b.HasOne("Manage_Store.Models.Entities.Product", "Product")
-                        .WithMany("OrderItems")
+                        .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -585,29 +434,9 @@ namespace Manage_Store.Migrations
                     b.Navigation("Supplier");
                 });
 
-            modelBuilder.Entity("Manage_Store.Models.Entities.AuditSessions", b =>
-                {
-                    b.Navigation("AuditItems");
-                });
-
-            modelBuilder.Entity("Manage_Store.Models.Entities.Customer", b =>
-                {
-                    b.Navigation("Orders");
-                });
-
             modelBuilder.Entity("Manage_Store.Models.Entities.Order", b =>
                 {
                     b.Navigation("Items");
-                });
-
-            modelBuilder.Entity("Manage_Store.Models.Entities.Product", b =>
-                {
-                    b.Navigation("OrderItems");
-                });
-
-            modelBuilder.Entity("Manage_Store.Models.Entities.User", b =>
-                {
-                    b.Navigation("Orders");
                 });
 #pragma warning restore 612, 618
         }

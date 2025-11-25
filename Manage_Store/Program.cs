@@ -91,10 +91,20 @@ builder.Services.AddScoped<IProductService, ProductImpl>();
 builder.Services.AddScoped<IPromotionService, PromotionImpl>();
 builder.Services.AddScoped<IOrderService, OrderImpl>();
 builder.Services.AddScoped<IPaymentService, PaymentImpl>();
-
-
-builder.Services.AddScoped<IInventory, InventoryService>();
 builder.Services.AddScoped<IAuditService, AuditServiceImpl>();
+builder.Services.AddScoped<ISupplierService, SupplierServiceImpl>();
+builder.Services.AddScoped<IInventoryService, InventoryServiceImpl>();
+
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowLocalhost3000", policy =>
+    {
+        policy.WithOrigins("http://localhost:3000") // Frontend URL
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
 
 var app = builder.Build();
 
@@ -108,6 +118,8 @@ if (app.Environment.IsDevelopment())
 app.UseCors("AllowNextJs");
 
 app.UseMiddleware<GlobalExceptionMiddleware>();
+
+app.UseCors("AllowLocalhost3000");
 
 app.UseHttpsRedirection();
 

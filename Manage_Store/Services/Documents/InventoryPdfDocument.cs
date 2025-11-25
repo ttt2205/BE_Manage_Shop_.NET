@@ -1,7 +1,8 @@
-using Manage_Store.Models.Entities;
+using Manage_Store.Models.Dtos; // Sử dụng Namespace chứa InventoryDto
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -9,9 +10,10 @@ namespace Manage_Store.Services.Documents
 {
     public class InventoryPdfDocument : IDocument
     {
-        private readonly IEnumerable<Inventory> _inventoryList;
+        // 1. Sửa kiểu dữ liệu nhận vào là DTO
+        private readonly IEnumerable<InventoryDto> _inventoryList;
 
-        public InventoryPdfDocument(IEnumerable<Inventory> inventoryList)
+        public InventoryPdfDocument(IEnumerable<InventoryDto> inventoryList)
         {
             _inventoryList = inventoryList;
         }
@@ -36,22 +38,24 @@ namespace Manage_Store.Services.Documents
                     // --- CONTENT (Nội dung) ---
                     page.Content()
                         .PaddingVertical(10)
-                        .Column(col => 
+                        .Column(col =>
                         {
-                            col.Spacing(10); 
+                            col.Spacing(10);
 
                             col.Item().Text($"Ngày xuất báo cáo: {DateTime.Now:dd/MM/yyyy HH:mm}");
-                            
+
                             col.Item().Table(table =>
                             {
+                                // Định nghĩa độ rộng cột
                                 table.ColumnsDefinition(columns =>
                                 {
-                                    columns.RelativeColumn(1); 
-                                    columns.RelativeColumn(4); 
-                                    columns.RelativeColumn(2); 
-                                    columns.RelativeColumn(3); 
+                                    columns.RelativeColumn(1); // Mã SP
+                                    columns.RelativeColumn(4); // Tên SP
+                                    columns.RelativeColumn(2); // Số lượng
+                                    columns.RelativeColumn(3); // Ngày cập nhật
                                 });
 
+                                // Header của bảng
                                 table.Header(header =>
                                 {
                                     static IContainer CellStyle(IContainer c) => c.Background(Colors.Grey.Darken2).Padding(5);
@@ -62,13 +66,17 @@ namespace Manage_Store.Services.Documents
                                     header.Cell().Element(CellStyle).Text("Cập nhật").FontColor(Colors.White);
                                 });
 
+                                // Dữ liệu bảng
                                 foreach (var item in _inventoryList)
                                 {
                                     static IContainer CellStyle(IContainer c) => c.BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(5);
 
-                                    table.Cell().Element(CellStyle).Text(item.ProductId);
-                                    table.Cell().Element(CellStyle).Text(item.Product?.ProductName ?? "N/A"); 
-                                    table.Cell().Element(CellStyle).Text(item.Quantity);
+                                    table.Cell().Element(CellStyle).Text(item.ProductId.ToString());
+
+                                    // 2. SỬA QUAN TRỌNG: Dùng item.ProductName trực tiếp từ DTO
+                                    table.Cell().Element(CellStyle).Text(string.IsNullOrEmpty(item.ProductName) ? "N/A" : item.ProductName);
+
+                                    table.Cell().Element(CellStyle).Text(item.Quantity.ToString());
                                     table.Cell().Element(CellStyle).Text(item.UpdatedAt.ToString("dd/MM/yyyy"));
                                 }
                             });
@@ -77,14 +85,13 @@ namespace Manage_Store.Services.Documents
                             col.Item().AlignRight().Text($"Tổng cộng: {_inventoryList.Count()} mặt hàng").Bold();
                         });
 
-
                     // --- FOOTER ---
                     page.Footer()
                         .AlignCenter()
                         .Text(x =>
                         {
                             x.Span("Trang ");
-                            x.CurrentPageNumber(); 
+                            x.CurrentPageNumber();
                             x.Span(" / ");
                             x.TotalPages();
                         });
