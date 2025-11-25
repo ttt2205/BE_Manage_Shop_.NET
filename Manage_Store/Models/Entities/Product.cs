@@ -30,7 +30,6 @@ namespace Manage_Store.Models.Entities
 
         [Column("created_at")]
         public DateTime CreatedAt { get; set; } = DateTime.Now;
-
         // Navigation
         public Category? Category { get; set; }
         public Supplier? Supplier { get; set; }

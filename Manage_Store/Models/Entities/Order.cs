@@ -13,6 +13,8 @@ namespace Manage_Store.Models.Entities
         public int? CustomerId { get; set; }
         [Column("user_id")]
         public int? UserId { get; set; }
+        public int? PromotionId { get; set; }
+
         [Column("promo_id")]
         public int? PromoId { get; set; }
         [Column("order_date")]
@@ -32,6 +34,7 @@ namespace Manage_Store.Models.Entities
         public User? User { get; set; }
         public Promotion? Promotion { get; set; }
 
-        public ICollection<OrderItem>? Items { get; set; }
+      public ICollection<OrderItem> Items { get; set; } = new List<OrderItem>();
+
     }
 }
