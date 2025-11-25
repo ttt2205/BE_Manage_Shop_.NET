@@ -8,7 +8,21 @@ using Manage_Store.Responses;
 using Microsoft.AspNetCore.Mvc;
 using Manage_Store.Responses;
 
+
 var builder = WebApplication.CreateBuilder(args);
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
+// CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: MyAllowSpecificOrigins,
+                      policy =>
+                      {
+                          policy.WithOrigins("http://localhost:3000")
+                                .AllowAnyHeader()
+                                .AllowAnyMethod();
+                      });
+});
 
 // Add services to the container.
 
@@ -59,6 +73,9 @@ builder.Services.AddCors(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Dang ký QuestPDF
+//QuestPDF.Settings.License = LicenseType.Community;
+
 // Đăng ký DbContext
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySql(
@@ -76,6 +93,8 @@ builder.Services.AddScoped<IOrderService, OrderImpl>();
 builder.Services.AddScoped<IPaymentService, PaymentImpl>();
 
 
+builder.Services.AddScoped<IInventory, InventoryService>();
+builder.Services.AddScoped<IAuditService, AuditServiceImpl>();
 
 var app = builder.Build();
 
@@ -94,6 +113,8 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 app.UseCors("AllowReactApp");
+app.UseCors(MyAllowSpecificOrigins);
+
 app.MapControllers();
 
 app.Run();
