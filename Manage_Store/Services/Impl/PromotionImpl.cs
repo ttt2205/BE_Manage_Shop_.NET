@@ -3,6 +3,7 @@ using Manage_Store.Models.Entities;
 using Manage_Store.Data;
 using Microsoft.EntityFrameworkCore;
 using Manage_Store.Models.Requests;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 
 namespace Manage_Store.Services.Impl
@@ -64,7 +65,7 @@ namespace Manage_Store.Services.Impl
 
         public async Task<Promotion> UpdateAsync(int id, PromotionReq promotionReq)
         {
-            // 🔍 Tìm bản ghi khuyến mãi theo ID
+            // Tìm bản ghi khuyến mãi theo ID
             var promotion = await _context.Promotions.FindAsync(id);
             if (promotion == null)
             {
@@ -91,7 +92,7 @@ namespace Manage_Store.Services.Impl
             }
             catch (DbUpdateException ex)
             {
-                Console.WriteLine($"❌ Lỗi cập nhật khuyến mãi: {ex.InnerException?.Message}");
+                Console.WriteLine($"Lỗi cập nhật khuyến mãi: {ex.InnerException?.Message}");
                 throw new Exception($"Không thể cập nhật khuyến mãi (ID={id}): {ex.InnerException?.Message}");
             }
         }
@@ -100,6 +101,11 @@ namespace Manage_Store.Services.Impl
         public async Task DeleteAsync(int id)
         {
             var promotion = await _context.Promotions.FindAsync(id);
+
+            if (promotion == null)
+            {
+                throw new KeyNotFoundException("Promotion not found");
+            }
 
             // Xóa product
             _context.Promotions.Remove(promotion);

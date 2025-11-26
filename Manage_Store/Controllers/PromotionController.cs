@@ -12,7 +12,7 @@ namespace Manage_Store.Controllers
 {
 
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/v1/promotion")]
     public class PromotionController : ControllerBase
     {
         private readonly IPromotionService _PromotionService;
@@ -54,19 +54,12 @@ namespace Manage_Store.Controllers
         public async Task<IActionResult> GetAllProduct()
         {
             var promotions = await _PromotionService.GetAllAsync();
-            if (promotions == null || promotions.Count == 0)
-            {
-                return NotFound(ApiResponse<string>.Builder()
-                    .WithSuccess(false)
-                    .WithStatus(404)
-                    .WithMessage("Không có dữ liệu promotion")
-                    .Build());
-            }
-            return Ok(ApiResponse<List<Promotion>>.Builder()
+
+            return Ok(ApiResultResponse<Promotion>.Builder()
                 .WithSuccess(true)
                 .WithStatus(200)
                 .WithMessage("Lấy danh sách promotions thành công")
-                .WithData(promotions)
+                .WithResult(promotions)
                 .Build());
         }
 

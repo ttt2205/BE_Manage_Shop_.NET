@@ -73,12 +73,12 @@ builder.Services.AddScoped<IStatistics, StatisticsImpl>();
 builder.Services.AddScoped<IInventory, InventoryService>();
 builder.Services.AddScoped<IAuditService, AuditServiceImpl>();
 builder.Services.AddScoped<ISupplierService, SupplierServiceImpl>();
-// builder.Services.AddScoped<IInventoryService, InventoryServiceImpl>();
 builder.Services.AddScoped<ICategoryService, CategoryImpl>();
 builder.Services.AddScoped<IProductService, ProductImpl>();
 builder.Services.AddScoped<IPromotionService, PromotionImpl>();
 builder.Services.AddScoped<IOrderService, OrderImpl>();
 builder.Services.AddScoped<IPaymentService, PaymentImpl>();
+builder.Services.AddScoped<ICustomerService, CustomerService>();
 
 var app = builder.Build();
 

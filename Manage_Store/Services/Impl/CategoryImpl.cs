@@ -30,7 +30,7 @@ namespace Manage_Store.Services.Impl
             return category;
         }
 
-        public async Task<ApiResPagination<List<Category>>> GetAllAsync(int page, int pageSize)
+        public async Task<ApiResPagination<List<Category>>> GetPaginationAsync(int page, int pageSize)
         {
             var query = _context.Categories.AsQueryable();
 
@@ -99,5 +99,10 @@ namespace Manage_Store.Services.Impl
             await _context.SaveChangesAsync();
         }
 
+        public async Task<List<Category>> GetCategoriesAsync()
+        {
+            var categories = await _context.Categories.ToListAsync();
+            return categories;
+        }
     }
 }

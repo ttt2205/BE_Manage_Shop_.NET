@@ -1,16 +1,17 @@
-using Manage_Store.Models.Requests;
-using Manage_Store.Models.Dtos;
-using Manage_Store.Services;
-using Manage_Store.Responses;
 using Manage_Store.Exceptions;
+using Manage_Store.Models.Dtos;
+using Manage_Store.Models.Entities;
+using Manage_Store.Models.Requests;
+using Manage_Store.Responses;
+using Manage_Store.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Manage_Store.Models.Entities;
+using System.Net;
 
 namespace Manage_Store.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/v1/category")]
     public class CategoryController : ControllerBase
     {
         private readonly ICategoryService _categoryService;
@@ -22,10 +23,23 @@ namespace Manage_Store.Controllers
 
         // GET: api/category
         [HttpGet]
-        public async Task<IActionResult> GetCategories([FromQuery] int page = 1, [FromQuery] int pageSize = 10, [FromQuery] string? name = null)
+        public async Task<IActionResult> GetPaginationCategories([FromQuery] int page = 1, [FromQuery] int pageSize = 10, [FromQuery] string? name = null)
         {
-            var response = await _categoryService.GetAllAsync(page, pageSize);
+            var response = await _categoryService.GetPaginationAsync(page, pageSize);
             return Ok(response);
+        }
+
+        [HttpGet("all")]
+        public async Task<IActionResult> GetCategories()
+        {
+            var response = await _categoryService.GetCategoriesAsync();
+            var res = ApiResultResponse<Category>.Builder()
+                    .WithSuccess(true)
+                    .WithStatus(200)
+                    .WithMessage("Lay danh sach category thanh cong")
+                    .WithResult(response)
+                    .Build();
+            return Ok(res);
         }
 
         // GET: api/category/{id}
@@ -33,8 +47,6 @@ namespace Manage_Store.Controllers
         public async Task<IActionResult> GetById(int id)
         {
             var category = await _categoryService.GetCategoryAsync(id);
-            if (category == null)
-                throw new BadRequestException("Category không tồn tại");
 
             return Ok(ApiResponse<Category>.Builder()
                 .WithSuccess(true)

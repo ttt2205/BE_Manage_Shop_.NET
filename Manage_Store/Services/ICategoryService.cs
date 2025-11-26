@@ -10,12 +10,15 @@ namespace Manage_Store.Services
     public interface ICategoryService
     {
         Task<Category> CreateAsync(CategoryReq categoryReq);
-        Task<ApiResPagination<List<Category>>> GetAllAsync(int page, int pageSize);
+
+        Task<ApiResPagination<List<Category>>> GetPaginationAsync(int page, int pageSize);
+
         Task<Category> GetCategoryAsync(int id);
 
         Task<Category> UpdateAsync(int id, CategoryReq categoryReq);
-
-        
+   
         Task DeleteAsync(int id);
+
+        Task<List<Category>> GetCategoriesAsync();
     }
 }

@@ -9,7 +9,7 @@ using Manage_Store.Models.Requests;
 namespace Manage_Store.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/v1/order")]
     public class OrderController : ControllerBase
     {
         private readonly IOrderService _orderService;
@@ -39,24 +39,17 @@ namespace Manage_Store.Controllers
         public async Task<IActionResult> GetAllProduct()
         {
             var orders = await _orderService.GetAllAsync();
-            if (orders == null || orders.Count == 0)
-            {
-                return NotFound(ApiResponse<string>.Builder()
-                    .WithSuccess(false)
-                    .WithStatus(404)
-                    .WithMessage("Không có dữ liệu promotion")
-                    .Build());
-            }
-            return Ok(ApiResponse<List<Order>>.Builder()
+
+            return Ok(ApiResultResponse<Order>.Builder()
                 .WithSuccess(true)
                 .WithStatus(200)
                 .WithMessage("Lấy danh sách orders thành công")
-                .WithData(orders)
+                .WithResult(orders ?? new List<Order>())
                 .Build());
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetProductByid(int id)
+        public async Task<IActionResult> GetProductById(int id)
         {
             var order = await _orderService.GetOrderAsync(id);
             if (order == null)
@@ -117,7 +110,12 @@ namespace Manage_Store.Controllers
         public async Task<ActionResult<List<Order>>> GetByUser(int userId)
         {
             var orders = await _orderService.GetOrdersByUserAsync(userId);
-            return Ok(orders);
+            return Ok(ApiResultResponse<Order>.Builder()
+                .WithSuccess(true)
+                .WithStatus(200)
+                .WithMessage("Lấy danh sách đơn hàng của user thành công")
+                .WithResult(orders)
+                .Build());
         }
 
     }

@@ -6,7 +6,7 @@ using Manage_Store.Models.Dtos;
 namespace Manage_Store.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/v1/statistic")]
     public class StatisticsController : ControllerBase
     {
         private readonly IStatistics _statistics;

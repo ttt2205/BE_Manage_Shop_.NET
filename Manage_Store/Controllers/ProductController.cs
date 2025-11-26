@@ -11,7 +11,7 @@ namespace Manage_Store.Controllers
 {
 
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/v1/product")]
     public class ProductController : ControllerBase
     {
         private readonly IProductService _ProductService;
@@ -46,20 +46,13 @@ namespace Manage_Store.Controllers
         [HttpGet]
 
         public async Task<IActionResult> GetAllProduct(
-    [FromQuery] int page = 1,
-    [FromQuery] int pageSize = 10,
-    [FromQuery] string search = null)
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 10,
+            [FromQuery] string search = null)
         {
             // Lấy toàn bộ danh sách từ service
             var allProducts = await _ProductService.GetAllAsync(search);
-            if (allProducts == null || allProducts.Count == 0)
-            {
-                return NotFound(ApiResPagination<string>.Builder()
-                    .WithSuccess(false)
-                    .WithStatus(404)
-                    .WithMessage("Không có dữ liệu sản phẩm")
-                    .Build());
-            }
+     
             var totalItems = allProducts.Count;
             var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
             // Lấy dữ liệu cho trang hiện tại
@@ -67,13 +60,13 @@ namespace Manage_Store.Controllers
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToList();
-            var meta = new Meta
-            {
-                CurrentPage = page,
-                PageSize = pageSize,
-                TotalItems = totalItems,
-                TotalPage = totalPages
-            };
+
+            var meta = Meta.Builder()
+                .WithCurrentPage(page)
+                .WithPageSize(pageSize)
+                .WithTotalItems(totalItems)
+                .WithTotalPage(totalPages)
+                .Build();
 
             return Ok(ApiResPagination<List<Product>>.Builder()
                 .WithSuccess(true)

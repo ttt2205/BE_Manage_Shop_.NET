@@ -4,7 +4,7 @@
     {
         public int Id { get; set; }
         public required string Username { get; set; }
-        public required string Email { get; set; }
+
         public required string FullName { get; set; }
         public required string Role { get; set; }
 
@@ -19,7 +19,6 @@
         {
             private int _id;
             private string _username = string.Empty;
-            private string _email = string.Empty;
             private string _fullName = string.Empty;
             private string _role = string.Empty;
 
@@ -32,12 +31,6 @@
             public UserDtoBuilder WithUsername(string username)
             {
                 _username = username;
-                return this;
-            }
-
-            public UserDtoBuilder WithEmail(string email)
-            {
-                _email = email;
                 return this;
             }
 

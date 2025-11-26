@@ -38,9 +38,9 @@ namespace Manage_Store.Responses
                 return this;
             }
 
-            public ApiResPaginationBuilder<TBuilder> WithResult(TBuilder? Result)
+            public ApiResPaginationBuilder<TBuilder> WithResult(TBuilder? result)
             {
-                _response.Result = Result;
+                _response.Result = result;
                 return this;
             }
 
@@ -61,9 +61,47 @@ namespace Manage_Store.Responses
     {
         public int CurrentPage { get; set; }
         public int PageSize { get; set; }
-
         public int TotalPage { get; set; }
-
         public int TotalItems { get; set; }
+
+        // Builder cho Meta
+        public static MetaBuilder Builder()
+        {
+            return new MetaBuilder();
+        }
+
+        public class MetaBuilder
+        {
+            private readonly Meta _meta = new Meta();
+
+            public MetaBuilder WithCurrentPage(int currentPage)
+            {
+                _meta.CurrentPage = currentPage;
+                return this;
+            }
+
+            public MetaBuilder WithPageSize(int pageSize)
+            {
+                _meta.PageSize = pageSize;
+                return this;
+            }
+
+            public MetaBuilder WithTotalPage(int totalPage)
+            {
+                _meta.TotalPage = totalPage;
+                return this;
+            }
+
+            public MetaBuilder WithTotalItems(int totalItems)
+            {
+                _meta.TotalItems = totalItems;
+                return this;
+            }
+
+            public Meta Build()
+            {
+                return _meta;
+            }
+        }
     }
 }
