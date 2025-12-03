@@ -8,7 +8,9 @@ namespace Manage_Store.Services
     {
         Task<Product> CreateAsync(ProductReq ProductReq);
 
-        Task<List<Product>> GetAllAsync(string search = null);
+        Task<List<Product>> GetPaginationAsync(string search = null);
+
+        Task<List<ProductDto>> GetAllAsync();
 
         Task<Product> GetProductAsync(int id);
 

@@ -1,24 +1,32 @@
 ﻿using Manage_Store.Data;
+using Manage_Store.Middleware;
+using Manage_Store.Responses;
+using Manage_Store.Security;
 using Manage_Store.Services;
 using Manage_Store.Services.Impl;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using QuestPDF.Infrastructure;
 
-using Manage_Store.Middleware;
-using Microsoft.AspNetCore.Mvc;
-using Manage_Store.Responses;
-
 var builder = WebApplication.CreateBuilder(args);
+
+//string password = "admin";
+//string hash = BCrypt.Net.BCrypt.HashPassword(password);
+
+//Console.WriteLine("Mật khẩu gốc: " + password);
+//Console.WriteLine("BCrypt hash: " + hash);
 
 // CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp", policy =>
     {
-        policy.WithOrigins("http://localhost:3000") // FE URL
-              .AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowCredentials();
+        policy
+           .WithOrigins("http://localhost:3000", "https://localhost:3000")
+           .AllowAnyHeader()
+           .AllowAnyMethod()
+           .AllowCredentials();
+
     });
 });
 
@@ -79,6 +87,7 @@ builder.Services.AddScoped<IPromotionService, PromotionImpl>();
 builder.Services.AddScoped<IOrderService, OrderImpl>();
 builder.Services.AddScoped<IPaymentService, PaymentImpl>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
+builder.Services.AddScoped<JwtHelper>();
 
 var app = builder.Build();
 

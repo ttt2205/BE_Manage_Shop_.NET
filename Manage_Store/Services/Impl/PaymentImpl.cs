@@ -35,7 +35,7 @@ namespace Manage_Store.Services.Impl
             var payment = new Payment
             {
                 OrderId = paymentReq.OrderId,
-                Amount = order.TotalAmount - order.DiscountAmount,
+                Amount = order.TotalAmount,
                 PaymentMethod = paymentReq.PaymentMethod,
                 PaymentDate = DateTime.Now
             };
