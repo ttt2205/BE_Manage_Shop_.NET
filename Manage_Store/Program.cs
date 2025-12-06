@@ -3,7 +3,7 @@ using Manage_Store.Services;
 using Manage_Store.Services.Impl;
 using Microsoft.EntityFrameworkCore;
 using QuestPDF.Infrastructure;
-
+using Manage_Store.Security;
 using Manage_Store.Middleware;
 using Microsoft.AspNetCore.Mvc;
 using Manage_Store.Responses;
@@ -65,7 +65,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         builder.Configuration.GetConnectionString("DefaultConnection"),
         new MySqlServerVersion(new Version(8, 0, 36))
     ));
-
+builder.Services.AddScoped<JwtHelper>();
 // Đăng ký DI cho Service
 builder.Services.AddScoped<IAuth, AuthImpl>();
 builder.Services.AddScoped<IUserService, UserServiceImpl>();
