@@ -74,7 +74,7 @@ namespace Manage_Store.Services.Impl
                 .Include(o => o.Customer)
                 .Include(o => o.User)
                 .Include(o => o.Promotion)
-                .Include(o => o.Items) // nếu bạn muốn load các item trong đơn
+                .Include(o => o.Items)
                 .ToListAsync();
         }
 

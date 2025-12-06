@@ -15,7 +15,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp", policy =>
     {
-        policy.WithOrigins("http://localhost:3000") // FE URL
+        policy.WithOrigins("http://localhost:3000", "http://localhost:5180") // FE URL
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
@@ -79,10 +79,12 @@ builder.Services.AddScoped<IPromotionService, PromotionImpl>();
 builder.Services.AddScoped<IOrderService, OrderImpl>();
 builder.Services.AddScoped<IPaymentService, PaymentImpl>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
+builder.Services.AddHttpClient();
+builder.Services.AddScoped<IMomoService, MomoService>();
+builder.Services.AddSingleton<Manage_Store.Security.JwtHelper>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

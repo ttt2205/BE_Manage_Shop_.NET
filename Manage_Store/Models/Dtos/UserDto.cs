@@ -53,7 +53,6 @@
                 {
                     Id = _id,
                     Username = _username,
-                    Email = _email,
                     FullName = _fullName,
                     Role = _role
                 };
