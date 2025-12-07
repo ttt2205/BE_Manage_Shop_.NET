@@ -1,12 +1,12 @@
 ﻿using Manage_Store.Data;
+using Manage_Store.Middleware;
+using Manage_Store.Responses;
+using Manage_Store.Security;
 using Manage_Store.Services;
 using Manage_Store.Services.Impl;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using QuestPDF.Infrastructure;
-
-using Manage_Store.Middleware;
-using Microsoft.AspNetCore.Mvc;
-using Manage_Store.Responses;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,7 +15,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp", policy =>
     {
-        policy.WithOrigins("http://localhost:3000", "http://localhost:5180") // FE URL
+        policy.WithOrigins("http://localhost:3000","https://localhost:3000", "http://localhost:5180", "https://localhost:5180") // FE URL
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
@@ -91,10 +91,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection();
 
-app.UseAuthorization();
 app.UseCors("AllowReactApp");
+app.UseAuthorization();
 
 app.MapControllers();
 

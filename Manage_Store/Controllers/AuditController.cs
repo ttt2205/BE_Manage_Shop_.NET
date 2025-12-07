@@ -8,7 +8,7 @@ using QuestPDF.Fluent;
 
 namespace Manage_Store.Controllers
 {
-    [Route("api/audit")]
+    [Route("api/v1/audit")]
     [ApiController]
     public class AuditController : ControllerBase
     {
@@ -48,7 +48,7 @@ namespace Manage_Store.Controllers
             try
             {
                 
-                var mockUserId = 2; // Tạm thời dùng UserId = 2
+                var mockUserId = 1; // Tạm thời dùng UserId = 1
 
                 var session = await _auditService.StartAuditSessionAsync(request, mockUserId);
                 
@@ -85,7 +85,7 @@ namespace Manage_Store.Controllers
                 var item = await _auditService.SubmitAuditItemAsync(request);
                 var response = ApiResponse<object>.Builder()
                     .WithSuccess(true)
-                    .WithStatus(200)
+                    .WithStatus(201)
                     .WithMessage("Cập nhật mục kiểm kê thành công.")
                     .WithData(item)
                     .Build();
@@ -111,7 +111,7 @@ namespace Manage_Store.Controllers
                 var session = await _auditService.FinalizeAuditSessionAsync(request);
                 var response = ApiResponse<object>.Builder()
                     .WithSuccess(true)
-                    .WithStatus(200)
+                    .WithStatus(201)
                     .WithMessage("Đã chốt phiên kiểm kê và cập nhật kho thành công.")
                     .WithData(session)
                     .Build();

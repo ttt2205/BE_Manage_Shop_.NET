@@ -31,6 +31,13 @@ namespace Manage_Store.Controllers
             return StatusCode(res.Status, res);
         }
 
+        [HttpGet("{id}/order")]
+        public async Task<IActionResult> GetUserOrders(int id)
+        {
+            var res = await _userService.GetUserOrders(id);
+            return StatusCode(res.Status, res);
+        }
+
         // POST: /api/v1/user
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateUserDto dto)

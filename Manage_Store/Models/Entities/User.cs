@@ -17,7 +17,7 @@ namespace Manage_Store.Models.Entities
         public string Password { get; set; } = string.Empty;
 
         [Column("full_name")]
-        public string? FullName { get; set; }
+        public string? FullName { get; set; } = string.Empty;
 
         [Column("role", TypeName = "enum('admin','staff')")]
         public string Role { get; set; } = "staff";

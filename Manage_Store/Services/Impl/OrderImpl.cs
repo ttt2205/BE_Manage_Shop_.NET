@@ -3,6 +3,7 @@ using Manage_Store.Models.Dtos;
 using Manage_Store.Models.Entities;
 using Manage_Store.Models.Requests;
 using Microsoft.EntityFrameworkCore;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Manage_Store.Services.Impl
 {
@@ -20,7 +21,6 @@ namespace Manage_Store.Services.Impl
             {
                 CustomerId = orderReq.CustomerId,
                 UserId = orderReq.UserId,
-                PromotionId = orderReq.PromotionId,
                 OrderDate = DateTime.Now,
                 Status = orderReq.Status ?? "pending",
                 Items = orderReq.Items.Select(i => new OrderItem
@@ -54,6 +54,7 @@ namespace Manage_Store.Services.Impl
                         discountAmount = totalAmount;
 
                     promo.UsedCount++;
+                    order.PromotionId = promo.Id;
                 }
             }
 
@@ -68,39 +69,95 @@ namespace Manage_Store.Services.Impl
 
 
 
-        public async Task<List<Order>> GetAllAsync()
+        public async Task<List<OrderDto>> GetAllAsync()
         {
-            return await _context.Orders
+
+            var orders = await _context.Orders
+                .Include(o => o.Customer)
+                .Include(o => o.User)
+                .Include(o => o.Items)
+                    .ThenInclude(i => i.Product)
+                .ToListAsync();
+
+            return orders.Select(o => new OrderDto
+            {
+                Id = o.Id,
+                OrderDate = o.OrderDate,
+                Status = o.Status,
+                TotalAmount = o.TotalAmount,
+                DiscountAmount = o.DiscountAmount,
+                Customer = o.Customer == null ? null : new CustomerDto
+                {
+                    Id = o.Customer.Id,
+                    Name = o.Customer.Name,
+                    Phone = o.Customer.Phone,
+                    Email = o.Customer.Email,
+                    Address = o.Customer.Address,
+                },
+                User = o.User == null ? null : new UserDto
+                {
+                    Username = o.User.Username,
+                    FullName = o.User.FullName,
+                    Role = o.User.Role,
+                },
+                Items = o.Items.Select(i => new OrderItemDto
+                {
+                    Id = i.Id,
+                    ProductId = i.ProductId,
+                    ProductName = i.Product?.ProductName ?? "",
+                    Quantity = i.Quantity,
+                    Price = i.Price,
+                    Subtotal = i.Subtotal
+                }).ToList()
+            }).ToList();
+        }
+
+        public async Task<OrderDto?> GetOrderAsync(int id)
+        {
+            var order = await _context.Orders
                 .Include(o => o.Customer)
                 .Include(o => o.User)
                 .Include(o => o.Promotion)
                 .Include(o => o.Items)
-                .ToListAsync();
-        }
+                    .ThenInclude(i => i.Product)
+                .FirstOrDefaultAsync(o => o.Id == id);
 
+            if (order == null)
+                return null; // hoặc throw new NotFoundException("Order not found");
 
+            var orderDto = new OrderDto
+            {
+                Id = order.Id,
+                OrderDate = order.OrderDate,
+                Status = order.Status,
+                TotalAmount = order.TotalAmount,
+                DiscountAmount = order.DiscountAmount,
+                Customer = order.Customer == null ? null : new CustomerDto
+                {
+                    Id = order.Customer.Id,
+                    Name = order.Customer.Name,
+                    Phone = order.Customer.Phone,
+                    Email = order.Customer.Email,
+                    Address = order.Customer.Address,
+                },
+                User = order.User == null ? null : new UserDto
+                {
+                    Username = order.User.Username,
+                    FullName = order.User.FullName,
+                    Role = order.User.Role,
+                },
+                Items = order.Items.Select(i => new OrderItemDto
+                {
+                    Id = i.Id,
+                    ProductId = i.ProductId,
+                    ProductName = i.Product?.ProductName ?? "",
+                    Quantity = i.Quantity,
+                    Price = i.Price,
+                    Subtotal = i.Subtotal
+                }).ToList()
+            };
 
-        public async Task<Order> GetOrderAsync(int id)
-        {
-            var order = await _context.Orders
-                   .Include(o => o.Customer)
-                   .Include(o => o.User)
-                   .Include(o => o.Promotion)
-                   .Include(o => o.Items)
-                       .ThenInclude(i => i.Product)
-                   .FirstOrDefaultAsync(o => o.Id == id);
-
-            if (order.CustomerId.HasValue)
-                await _context.Entry(order).Reference(p => p.Customer).LoadAsync();
-
-            if (order.UserId.HasValue)
-                await _context.Entry(order).Reference(p => p.User).LoadAsync();
-
-            if (order.PromotionId.HasValue)
-                await _context.Entry(order).Reference(p => p.Promotion).LoadAsync();
-
-
-            return order;
+            return orderDto;
         }
 
         public async Task<Order> UpdateAsync(int id, OrderReq orderReq)
@@ -162,7 +219,7 @@ namespace Manage_Store.Services.Impl
             return order;
         }
 
-        public async Task<Order> UpdateStatus(int id, String status)
+        public async Task<Order> UpdateStatus(int id, string status)
         {
             // Tìm đơn hàng theo ID
             var order = await _context.Orders.FindAsync(id);
@@ -179,16 +236,46 @@ namespace Manage_Store.Services.Impl
             return order;
         }
 
-        public async Task<List<Order>> GetOrdersByUserAsync(int userId)
+        public async Task<List<OrderDto>> GetOrdersByDateAsync(DateTime date)
         {
-            return await _context.Orders
-                .Where(o => o.UserId == userId)
+            var startDate = date.Date;
+            var endDate = startDate.AddDays(1);
+
+            var orders = await _context.Orders
+                .Where(o => o.OrderDate >= startDate && o.OrderDate < endDate)
                 .Include(o => o.Customer)
-                .Include(o => o.Promotion)
                 .Include(o => o.Items)
                     .ThenInclude(i => i.Product)
                 .ToListAsync();
+
+            return orders.Select(o => new OrderDto
+            {
+                Id = o.Id,
+                OrderDate = o.OrderDate,
+                Status = o.Status,
+                TotalAmount = o.TotalAmount,
+                DiscountAmount = o.DiscountAmount,
+                Customer = o.Customer == null ? null : new CustomerDto
+                {
+                    Id = o.Customer.Id,
+                    Name = o.Customer.Name,
+                    Phone = o.Customer.Phone,
+                    Email = o.Customer.Email,
+                    Address = o.Customer.Address,
+                },
+                Items = o.Items.Select(i => new OrderItemDto
+                {
+                    Id = i.Id,
+                    ProductId = i.ProductId,
+                    ProductName = i.Product?.ProductName ?? "",
+                    Quantity = i.Quantity,
+                    Price = i.Price,
+                    Subtotal = i.Subtotal
+                }).ToList()
+            }).ToList();
         }
+
+
 
     }
 }

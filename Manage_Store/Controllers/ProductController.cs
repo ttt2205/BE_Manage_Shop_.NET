@@ -42,16 +42,16 @@ namespace Manage_Store.Controllers
                 .WithData(created)
                 .Build());
         }
+        
         // get all
         [HttpGet]
-
         public async Task<IActionResult> GetAllProduct(
             [FromQuery] int page = 1,
             [FromQuery] int pageSize = 10,
             [FromQuery] string search = null)
         {
             // Lấy toàn bộ danh sách từ service
-            var allProducts = await _ProductService.GetAllAsync(search);
+            var allProducts = await _ProductService.GetPaginationAsync(search);
      
             var totalItems = allProducts.Count;
             var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
@@ -77,10 +77,23 @@ namespace Manage_Store.Controllers
                 .Build());
         }
 
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAll()
+        {
+            var data = await _ProductService.GetAllAsync();
+
+            var res = ApiResultResponse<ProductDto>.Builder()
+                  .WithSuccess(true)
+                  .WithStatus(200)
+                  .WithMessage("Get products successfully")
+                  .WithResult(data)
+                  .Build();
+            return Ok(res);
+        }
 
         // get product by id
 
-        [HttpGet("{id}")]
+        [HttpGet("detail/{id}")]
         public async Task<IActionResult> GetProductByid(int id)
         {
             var product = await _ProductService.GetProductAsync(id);
@@ -126,6 +139,5 @@ namespace Manage_Store.Controllers
             .WithMessage("Xóa category thành công")
             .Build());
         }
-
     }
 }

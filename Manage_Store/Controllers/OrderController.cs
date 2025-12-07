@@ -40,11 +40,11 @@ namespace Manage_Store.Controllers
         {
             var orders = await _orderService.GetAllAsync();
 
-            return Ok(ApiResultResponse<Order>.Builder()
+            return Ok(ApiResultResponse<OrderDto>.Builder()
                 .WithSuccess(true)
                 .WithStatus(200)
                 .WithMessage("Lấy danh sách orders thành công")
-                .WithResult(orders ?? new List<Order>())
+                .WithResult(orders)
                 .Build());
         }
 
@@ -53,9 +53,9 @@ namespace Manage_Store.Controllers
         {
             var order = await _orderService.GetOrderAsync(id);
             if (order == null)
-                throw new BadRequestException("order không tồn tại");
+                throw new NotFoundException("order không tồn tại");
 
-            return Ok(ApiResponse<Order>.Builder()
+            return Ok(ApiResponse<OrderDto>.Builder()
                 .WithSuccess(true)
                 .WithStatus(200)
                 .WithMessage("Lấy order thành công")
@@ -105,15 +105,15 @@ namespace Manage_Store.Controllers
                 .Build());
         }
 
-        // GET: api/orders/user/{userId}
-        [HttpGet("user/{userId}")]
-        public async Task<ActionResult<List<Order>>> GetByUser(int userId)
+        // GET /api/orders/by-date?date=2024-11-20
+        [HttpGet("by-date")]
+        public async Task<IActionResult> GetOrdersByDate(DateTime date)
         {
-            var orders = await _orderService.GetOrdersByUserAsync(userId);
-            return Ok(ApiResultResponse<Order>.Builder()
+            var orders = await _orderService.GetOrdersByDateAsync(date);
+            return Ok(ApiResultResponse<OrderDto>.Builder()
                 .WithSuccess(true)
                 .WithStatus(200)
-                .WithMessage("Lấy danh sách đơn hàng của user thành công")
+                .WithMessage("Lấy danh sách đơn hàng theo ngày thành công")
                 .WithResult(orders)
                 .Build());
         }

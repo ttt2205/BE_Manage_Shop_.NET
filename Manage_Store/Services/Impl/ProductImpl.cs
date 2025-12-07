@@ -44,7 +44,7 @@ namespace Manage_Store.Services.Impl
             return product;
         }
 
-        public async Task<List<Product>> GetAllAsync(string search = null)
+        public async Task<List<Product>> GetPaginationAsync(string search = null)
         {
             var query = _context.Products
                 .Include(p => p.Category)
@@ -113,5 +113,23 @@ namespace Manage_Store.Services.Impl
             // Lưu thay đổi vào DB
             await _context.SaveChangesAsync();
         }
+
+        public async Task<List<ProductDto>> GetAllAsync()
+        {
+            return await _context.Products
+                .Select(p => new ProductDto
+                {
+                    Id = p.Id,
+                    ProductName = p.ProductName,
+                    Barcode = p.Barcode,
+                    Price = p.Price,
+                    Unit = p.Unit,
+                    CreatedAt = p.CreatedAt,
+                    CategoryId = p.CategoryId,
+                    SupplierId = p.SupplierId
+                })
+                .ToListAsync();
+        }
+
     }
 }
