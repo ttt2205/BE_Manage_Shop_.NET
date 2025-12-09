@@ -114,19 +114,23 @@ namespace Manage_Store.Services.Impl
             await _context.SaveChangesAsync();
         }
 
-        public async Task<List<ProductDto>> GetAllAsync()
+        public async Task<List<Product>> GetAllAsync()
         {
             return await _context.Products
-                .Select(p => new ProductDto
+                .Include(p => p.Category)
+                .Include(p => p.Supplier)
+                .Select(p => new Product
                 {
                     Id = p.Id,
                     ProductName = p.ProductName,
                     Barcode = p.Barcode,
                     Price = p.Price,
                     Unit = p.Unit,
-                    CreatedAt = p.CreatedAt,
                     CategoryId = p.CategoryId,
-                    SupplierId = p.SupplierId
+                    SupplierId = p.SupplierId,
+                    Category = p.Category,
+                    Supplier = p.Supplier
+                    
                 })
                 .ToListAsync();
         }

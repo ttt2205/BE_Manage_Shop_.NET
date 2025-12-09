@@ -10,7 +10,7 @@ namespace Manage_Store.Services
 
         Task<List<Product>> GetPaginationAsync(string search = null);
 
-        Task<List<ProductDto>> GetAllAsync();
+        Task<List<Product>> GetAllAsync();
 
         Task<Product> GetProductAsync(int id);
 
