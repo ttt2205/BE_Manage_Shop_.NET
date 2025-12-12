@@ -7,15 +7,15 @@ namespace Manage_Store.Services
     public interface IOrderService
     {
         Task<Order> CreateAsync(OrderReq orderReq);
-        Task<List<Order>> GetAllAsync();
+        Task<List<OrderDto>> GetAllAsync();
 
-        Task<Order> GetOrderAsync(int id);
+        Task<OrderDto?> GetOrderAsync(int id);
 
         Task<Order> UpdateAsync(int id, OrderReq orderReq);
 
-        Task<Order> UpdateStatus(int id, String status);
+        Task<Order> UpdateStatus(int id, string status);
 
-        Task<List<Order>> GetOrdersByUserAsync(int userId);
+        Task<List<OrderDto>> GetOrdersByDateAsync(DateTime date);
         // Task DeleteAsync(int id);
     }
 }

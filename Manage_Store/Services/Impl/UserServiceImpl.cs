@@ -1,5 +1,6 @@
 ﻿
 using Manage_Store.Data;
+using Manage_Store.Exceptions;
 using Manage_Store.Models.Dtos;
 using Manage_Store.Models.Entities;
 using Manage_Store.Models.Requests;
@@ -31,15 +32,16 @@ namespace Manage_Store.Services.Impl
             int totalPages = (int)Math.Ceiling((double)totalItems / size);
 
             var users = await query
+                .OrderByDescending(x => x.Id)
                 .Skip((page - 1) * size)
                 .Take(size)
-                .Select(x => UserDto.Builder()
-                    .WithId(x.Id)
-                    .WithUsername(x.Username)
-                    .WithFullName(x.FullName ?? "")
-                    .WithRole(x.Role)
-                    .Build()
-                ).ToListAsync();
+                .Select(x => new UserDto
+                {
+                    Id = x.Id,
+                    Username = x.Username,
+                    FullName = x.FullName,
+                    Role = x.Role
+                }).ToListAsync();
 
             return ApiResPagination<List<UserDto>>.Builder()
                 .WithSuccess(true)
@@ -84,11 +86,7 @@ namespace Manage_Store.Services.Impl
         {
             if (await _context.Users.AnyAsync(x => x.Username == dto.Username))
             {
-                return ApiResponse<UserDto>.Builder()
-                    .WithSuccess(false)
-                    .WithStatus(400)
-                    .WithMessage("Username đã tồn tại")
-                    .Build();
+                throw new BadRequestException("Username đã tồn tại");
             }
 
             var user = new User
@@ -137,6 +135,7 @@ namespace Manage_Store.Services.Impl
                     .Build();
             }
 
+            user.Username = dto.Username ?? user.Username;
             user.FullName = dto.FullName ?? user.FullName;
             user.Role = dto.Role ?? user.Role;
 

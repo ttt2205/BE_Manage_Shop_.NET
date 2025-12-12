@@ -15,6 +15,6 @@ namespace Manage_Store.Models.Requests
         public decimal DiscountAmount { get; set; }
 
         // Danh sách chi tiết đơn hàng
-        public List<OrderItemReq>? Items { get; set; }
+        public List<OrderItemReq> Items { get; set; } = new List<OrderItemReq>();
     }
 }

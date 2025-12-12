@@ -8,7 +8,7 @@ using QuestPDF.Fluent;
 
 namespace Manage_Store.Controllers
 {
-    [Route("api/audit")]
+    [Route("api/v1/audit")]
     [ApiController]
     public class AuditController : ControllerBase
     {
@@ -48,7 +48,7 @@ namespace Manage_Store.Controllers
             try
             {
                 
-                var mockUserId = 2; // Tạm thời dùng UserId = 2
+                var mockUserId = 1; // Tạm thời dùng UserId = 1
 
                 var session = await _auditService.StartAuditSessionAsync(request, mockUserId);
                 

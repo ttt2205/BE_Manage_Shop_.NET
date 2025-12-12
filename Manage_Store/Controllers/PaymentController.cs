@@ -7,8 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Manage_Store.Controllers
 {
-    // localhost:****/api/auth
-    [Route("api/[controller]")]
+    [Route("api/v1/payment")]
     [ApiController]
     public class PaymentController : ControllerBase
     {

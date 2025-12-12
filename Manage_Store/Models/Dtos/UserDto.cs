@@ -4,8 +4,7 @@
     {
         public int Id { get; set; }
         public required string Username { get; set; }
-
-        public required string FullName { get; set; }
+        public required string? FullName { get; set; }
         public required string Role { get; set; }
 
         // 🔹 Tạo builder
@@ -46,6 +45,7 @@
                 return this;
             }
 
+
             // 🔹 Phương thức Build() cuối cùng
             public UserDto Build()
             {
@@ -53,7 +53,6 @@
                 {
                     Id = _id,
                     Username = _username,
-                    // Email = _email,
                     FullName = _fullName,
                     Role = _role
                 };
