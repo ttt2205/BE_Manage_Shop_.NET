@@ -4,6 +4,7 @@ using Manage_Store.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Manage_Store.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251213171319_AddNewRoleForUser")]
+    partial class AddNewRoleForUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -102,14 +105,7 @@ namespace Manage_Store.Migrations
                         .HasColumnType("longtext")
                         .HasColumnName("phone");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int")
-                        .HasColumnName("user_id");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId")
-                        .IsUnique();
 
                     b.ToTable("customers");
                 });
@@ -462,17 +458,6 @@ namespace Manage_Store.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Manage_Store.Models.Entities.Customer", b =>
-                {
-                    b.HasOne("Manage_Store.Models.Entities.User", "User")
-                        .WithOne("Customer")
-                        .HasForeignKey("Manage_Store.Models.Entities.Customer", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Manage_Store.Models.Entities.Inventory", b =>
                 {
                     b.HasOne("Manage_Store.Models.Entities.Product", "Product")
@@ -591,8 +576,6 @@ namespace Manage_Store.Migrations
 
             modelBuilder.Entity("Manage_Store.Models.Entities.User", b =>
                 {
-                    b.Navigation("Customer");
-
                     b.Navigation("Orders");
                 });
 #pragma warning restore 612, 618
