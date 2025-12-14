@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Manage_Store.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251123055348_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20251213171319_AddNewRoleForUser")]
+    partial class AddNewRoleForUser
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -434,7 +434,7 @@ namespace Manage_Store.Migrations
 
                     b.Property<string>("Role")
                         .IsRequired()
-                        .HasColumnType("enum('admin','staff')")
+                        .HasColumnType("enum('admin','staff', 'customer')")
                         .HasColumnName("role");
 
                     b.Property<string>("Username")

@@ -8,6 +8,7 @@ namespace Manage_Store.Services
     {
         Task<ApiResPagination<List<UserDto>>> GetUsers(int page, int size, string? search);
         Task<ApiResponse<UserDto>> GetUserDetail(int id);
+        Task<ApiResPagination<List<OrderDto>>> GetUserOrders(int id);
         Task<ApiResponse<UserDto>> CreateUser(CreateUserDto dto);
         Task<ApiResponse<UserDto>> UpdateUser(int id, UpdateUserDto dto);
         Task<ApiResponse<string>> DeleteUser(int id);
