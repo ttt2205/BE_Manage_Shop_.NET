@@ -8,8 +8,8 @@ using Manage_Store.Models.Requests;
 
 namespace Manage_Store.Controllers
 {
+    [Route("api/v1/[controller]")]
     [ApiController]
-    [Route("api/v1/order")]
     public class OrderController : ControllerBase
     {
         private readonly IOrderService _orderService;

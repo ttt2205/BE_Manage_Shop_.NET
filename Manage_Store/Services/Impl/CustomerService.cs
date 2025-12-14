@@ -78,6 +78,34 @@ namespace Manage_Store.Services.Impl
                 .Build();
         }
 
+        public async Task<ApiResponse<CustomerDto>> GetByUserId(int userId)
+        {
+            var customer = await _context.Customers.FirstOrDefaultAsync(c => c.UserId == userId);
+
+            if (customer == null)
+            {
+                return ApiResponse<CustomerDto>.Builder()
+                    .WithSuccess(false)
+                    .WithStatus(404)
+                    .WithMessage("Customer not found")
+                    .Build();
+            }
+
+            return ApiResponse<CustomerDto>.Builder()
+                .WithSuccess(true)
+                .WithStatus(200)
+                .WithData(new CustomerDto
+                {
+                    Id = customer.Id,
+                    Name = customer.Name,
+                    Phone = customer.Phone,
+                    Email = customer.Email,
+                    Address = customer.Address,
+                    UserId = customer.UserId
+                })
+                .Build();
+        }
+
         // Get by ID
         public async Task<ApiResponse<CustomerDto>> GetById(int id)
         {
@@ -115,7 +143,9 @@ namespace Manage_Store.Services.Impl
                 Phone = dto.Phone,
                 Email = dto.Email,
                 Address = dto.Address,
+                UserId = dto.UserId,
                 CreatedAt = DateTime.Now
+                
             };
 
             _context.Customers.Add(customer);
@@ -131,7 +161,8 @@ namespace Manage_Store.Services.Impl
                     Name = customer.Name,
                     Phone = customer.Phone,
                     Email = customer.Email,
-                    Address = customer.Address
+                    Address = customer.Address,
+                    UserId = customer.UserId
                 })
                 .Build();
         }

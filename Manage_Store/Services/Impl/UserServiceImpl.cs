@@ -81,6 +81,40 @@ namespace Manage_Store.Services.Impl
                 .Build();
         }
 
+        public async Task<ApiResPagination<List<OrderDto>>> GetUserOrders(int id)
+        {
+            var orders = await _context.Orders
+    .Where(o => o.UserId == id)
+    .Include(o => o.Items)                // Include OrderItem
+    .ThenInclude(i => i.Product)          // Nếu cần lấy thêm Product
+    .Select(o => new OrderDto
+    {
+        Id = o.Id,
+        OrderDate = o.OrderDate,
+        TotalAmount = o.TotalAmount,
+        Status = o.Status,
+        DiscountAmount = o.DiscountAmount,
+
+        Items = o.Items.Select(i => new OrderItemDto
+        {
+            Id = i.Id,
+            ProductId = i.ProductId,
+            Quantity = i.Quantity,
+            Price = i.Price,
+            Subtotal = i.Subtotal,
+            ProductName = i.Product != null ? i.Product.ProductName : null
+        }).ToList()
+    })
+    .ToListAsync();
+
+            return ApiResPagination<List<OrderDto>>.Builder()
+                .WithSuccess(true)
+                .WithStatus(200)
+                .WithMessage("Lấy danh sách đơn hàng của user thành công")
+                .WithResult(orders)
+                .Build();
+        }
+
         // Tạo user
         public async Task<ApiResponse<UserDto>> CreateUser(CreateUserDto dto)
         {

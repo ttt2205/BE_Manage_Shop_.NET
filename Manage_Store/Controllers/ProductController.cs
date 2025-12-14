@@ -82,7 +82,7 @@ namespace Manage_Store.Controllers
         {
             var data = await _ProductService.GetAllAsync();
 
-            var res = ApiResultResponse<ProductDto>.Builder()
+            var res = ApiResultResponse<Product>.Builder()
                   .WithSuccess(true)
                   .WithStatus(200)
                   .WithMessage("Get products successfully")

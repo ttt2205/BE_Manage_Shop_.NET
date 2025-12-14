@@ -70,7 +70,7 @@ namespace Manage_Store.Services.Impl
                 Username = request.Username,
                 Password = BCrypt.Net.BCrypt.HashPassword(request.Password),
                 FullName = request.FullName,
-                Role = "staff"
+                Role = request.Role ?? "staff"
             };
 
             _context.Users.Add(user);

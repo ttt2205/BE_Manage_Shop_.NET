@@ -10,23 +10,15 @@ using QuestPDF.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//string password = "admin";
-//string hash = BCrypt.Net.BCrypt.HashPassword(password);
-
-//Console.WriteLine("Mật khẩu gốc: " + password);
-//Console.WriteLine("BCrypt hash: " + hash);
-
 // CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp", policy =>
     {
-        policy
-           .WithOrigins("http://localhost:3000", "https://localhost:3000")
-           .AllowAnyHeader()
-           .AllowAnyMethod()
-           .AllowCredentials();
-
+        policy.WithOrigins("http://localhost:3000","https://localhost:3000", "http://localhost:5180", "https://localhost:5180") // FE URL
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
     });
 });
 
@@ -73,7 +65,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         builder.Configuration.GetConnectionString("DefaultConnection"),
         new MySqlServerVersion(new Version(8, 0, 36))
     ));
-
+builder.Services.AddScoped<JwtHelper>();
 // Đăng ký DI cho Service
 builder.Services.AddScoped<IAuth, AuthImpl>();
 builder.Services.AddScoped<IUserService, UserServiceImpl>();
@@ -87,21 +79,22 @@ builder.Services.AddScoped<IPromotionService, PromotionImpl>();
 builder.Services.AddScoped<IOrderService, OrderImpl>();
 builder.Services.AddScoped<IPaymentService, PaymentImpl>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
-builder.Services.AddScoped<JwtHelper>();
+builder.Services.AddHttpClient();
+builder.Services.AddScoped<IMomoService, MomoService>();
+builder.Services.AddSingleton<Manage_Store.Security.JwtHelper>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection();
 
-app.UseAuthorization();
 app.UseCors("AllowReactApp");
+app.UseAuthorization();
 
 app.MapControllers();
 

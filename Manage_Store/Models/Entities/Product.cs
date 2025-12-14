@@ -31,7 +31,9 @@ namespace Manage_Store.Models.Entities
         [Column("created_at")]
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         // Navigation
+        [ForeignKey("CategoryId")]
         public Category? Category { get; set; }
+        [ForeignKey("SupplierId")]
         public Supplier? Supplier { get; set; }
         public ICollection<OrderItem>? OrderItems { get; set; }
     }

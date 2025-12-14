@@ -25,7 +25,11 @@ namespace Manage_Store.Models.Entities
         [Column("created_at")]
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
+        [Column("user_id")]
+        public int UserId { get; set; }
+
         // Navigation
         public ICollection<Order>? Orders { get; set; }
+        public User User { get; set; } = null!;
     }
 }
