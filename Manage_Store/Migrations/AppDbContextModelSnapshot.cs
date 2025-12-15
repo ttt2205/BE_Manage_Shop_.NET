@@ -65,7 +65,8 @@ namespace Manage_Store.Migrations
                     b.Property<string>("CategoryName")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
+                        .HasColumnType("varchar(100)")
+                        .HasColumnName("category_name");
 
                     b.HasKey("Id");
 

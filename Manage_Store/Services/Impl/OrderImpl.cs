@@ -1,4 +1,5 @@
 using Manage_Store.Data;
+using Manage_Store.Exceptions;
 using Manage_Store.Models.Dtos;
 using Manage_Store.Models.Entities;
 using Manage_Store.Models.Requests;
@@ -40,6 +41,11 @@ namespace Manage_Store.Services.Impl
             {
                 var promo = await _context.Promotions
                     .FirstOrDefaultAsync(p => p.Id == orderReq.PromotionId.Value);
+
+                if (promo.UsageLimit > 0 && promo.UsedCount >= promo.UsageLimit)
+                {
+                    throw new BadRequestException($"Khuyến mãi '{promo.PromoCode}' đã hết lượt sử dụng.");
+                }
 
                 if (promo != null && totalAmount >= promo.MinOrderAmount)
                 {

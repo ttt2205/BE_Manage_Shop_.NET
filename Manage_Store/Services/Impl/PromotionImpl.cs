@@ -4,6 +4,7 @@ using Manage_Store.Data;
 using Microsoft.EntityFrameworkCore;
 using Manage_Store.Models.Requests;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Manage_Store.Exceptions;
 
 
 namespace Manage_Store.Services.Impl
@@ -70,6 +71,11 @@ namespace Manage_Store.Services.Impl
             if (promotion == null)
             {
                 throw new Exception($"Không tìm thấy khuyến mãi có ID = {id}");
+            }
+
+            if (promotionReq.StartDate > promotionReq.EndDate)
+            {
+                throw new BadRequestException("Ngày bắt đầu không được lớn hơn ngày kết thúc.");
             }
 
             // ✏️ Cập nhật các trường
