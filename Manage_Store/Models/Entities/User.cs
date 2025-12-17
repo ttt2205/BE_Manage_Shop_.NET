@@ -19,7 +19,7 @@ namespace Manage_Store.Models.Entities
         [Column("full_name")]
         public string? FullName { get; set; } = string.Empty;
 
-        [Column("role", TypeName = "enum('admin','staff', 'customer')")]
+        [Column("role", TypeName = "enum('admin','staff', 'customer', 'manager')")]
         public string Role { get; set; } = "staff";
 
         [Column("created_at")]

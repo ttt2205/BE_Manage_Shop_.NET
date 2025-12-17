@@ -151,6 +151,16 @@ namespace Manage_Store.Services.Impl
         // Cập nhật user
         public async Task<ApiResponse<UserDto>> UpdateUser(int id, UpdateUserDto dto)
         {
+            if (dto.Username == null)
+            {
+                throw new BadRequestException("Username is requested!");
+            }
+
+            if (await _context.Users.AnyAsync(x => x.Username.ToLower() == dto.Username.Trim().ToLower() && x.Id != id))
+            {
+                throw new BadRequestException("Username đã tồn tại");
+            }
+
             var user = await _context.Users.FindAsync(id);
 
             if (user == null)
@@ -160,17 +170,17 @@ namespace Manage_Store.Services.Impl
                     .WithMessage("User không tồn tại")
                     .Build();
 
-            if (user.Role == "admin" && dto.Role == "staff")
+            if (user.Role == "admin")
             {
                 return ApiResponse<UserDto>.Builder()
                     .WithSuccess(false)
                     .WithStatus(403)
-                    .WithMessage("Không được hạ quyền admin")
+                    .WithMessage("Không được thay đổi admin")
                     .Build();
             }
 
-            user.Username = dto.Username ?? user.Username;
-            user.FullName = dto.FullName ?? user.FullName;
+            user.Username = dto?.Username?.Trim() ?? user.Username;
+            user.FullName = dto?.FullName?.Trim() ?? user.FullName;
             user.Role = dto.Role ?? user.Role;
 
             await _context.SaveChangesAsync();
