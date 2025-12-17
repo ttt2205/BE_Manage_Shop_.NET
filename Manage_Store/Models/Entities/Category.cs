@@ -12,6 +12,7 @@ namespace Manage_Store.Models.Entities
         public int Id { get; set; }
 
         [Required, StringLength(100)]
+         [Column("category_name")]
         public string CategoryName { get; set; } = string.Empty;
     }
 }

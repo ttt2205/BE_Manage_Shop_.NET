@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Manage_Store.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251215073229_InitialCreate")]
+    [Migration("20251217145525_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -68,8 +68,7 @@ namespace Manage_Store.Migrations
                     b.Property<string>("CategoryName")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("varchar(100)")
-                        .HasColumnName("category_name");
+                        .HasColumnType("varchar(100)");
 
                     b.HasKey("Id");
 
@@ -442,7 +441,7 @@ namespace Manage_Store.Migrations
 
                     b.Property<string>("Role")
                         .IsRequired()
-                        .HasColumnType("enum('admin','staff', 'customer')")
+                        .HasColumnType("enum('admin','staff', 'customer', 'manager')")
                         .HasColumnName("role");
 
                     b.Property<string>("Username")

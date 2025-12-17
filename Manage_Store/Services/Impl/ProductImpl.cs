@@ -113,6 +113,16 @@ namespace Manage_Store.Services.Impl
             bool hasOrderItems = await _context.OrderItems.AnyAsync(oi => oi.ProductId == id);
             if (hasOrderItems)
                 throw new BadRequestException("Không thể xoá sản phẩm vì có order item liên quan.");
+            bool hasInventory = await _context.Inventory
+                .AnyAsync(i => i.ProductId == id);
+
+            bool hasAuditItems = await _context.InventoryAuditItems
+                .AnyAsync(ai => ai.ProductId == id);
+
+            if (hasInventory || hasAuditItems)
+                throw new BadRequestException(
+                    "Không thể xoá sản phẩm vì đang tồn tại trong kho hoặc lịch sử kiểm kê."
+                );
 
             _context.Products.Remove(product);
             await _context.SaveChangesAsync();

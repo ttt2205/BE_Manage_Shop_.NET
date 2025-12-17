@@ -65,8 +65,7 @@ namespace Manage_Store.Migrations
                     b.Property<string>("CategoryName")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("varchar(100)")
-                        .HasColumnName("category_name");
+                        .HasColumnType("varchar(100)");
 
                     b.HasKey("Id");
 
@@ -439,7 +438,7 @@ namespace Manage_Store.Migrations
 
                     b.Property<string>("Role")
                         .IsRequired()
-                        .HasColumnType("enum('admin','staff', 'customer')")
+                        .HasColumnType("enum('admin','staff', 'customer', 'manager')")
                         .HasColumnName("role");
 
                     b.Property<string>("Username")

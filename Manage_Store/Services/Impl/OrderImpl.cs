@@ -115,6 +115,7 @@ namespace Manage_Store.Services.Impl
                 .Include(o => o.User)
                 .Include(o => o.Items)
                     .ThenInclude(i => i.Product)
+                    .OrderByDescending(o => o.OrderDate)
                 .ToListAsync();
 
             return orders.Select(o => new OrderDto
