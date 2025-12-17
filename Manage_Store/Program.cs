@@ -15,7 +15,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp", policy =>
     {
-        policy.WithOrigins("http://localhost:3000","https://localhost:3000", "http://localhost:5180", "https://localhost:5180") // FE URL
+        policy.WithOrigins("http://localhost:3000","https://localhost:3000", "http://localhost:5180", "https://localhost:5180","https://localhost:7059","http://localhost:7059") // FE URL
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
