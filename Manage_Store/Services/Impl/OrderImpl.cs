@@ -1,4 +1,5 @@
 using Manage_Store.Data;
+using Manage_Store.Exceptions;
 using Manage_Store.Models.Dtos;
 using Manage_Store.Models.Entities;
 using Manage_Store.Models.Requests;
@@ -17,56 +18,93 @@ namespace Manage_Store.Services.Impl
 
         public async Task<Order> CreateAsync(OrderReq orderReq)
         {
-            var order = new Order
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
+            try
             {
-                CustomerId = orderReq.CustomerId,
-                UserId = orderReq.UserId,
-                OrderDate = DateTime.Now,
-                Status = orderReq.Status ?? "pending",
-                Items = orderReq.Items.Select(i => new OrderItem
+                var order = new Order
                 {
-                    ProductId = i.ProductId,
-                    Quantity = i.Quantity,
-                    Price = i.Price,
-                    Subtotal = i.Price * i.Quantity
-                }).ToList()
-            };
-
-            // Tính tổng tiền
-            decimal totalAmount = order.Items.Sum(i => i.Subtotal);
-            decimal discountAmount = 0;
-
-            if (orderReq.PromotionId.HasValue)
-            {
-                var promo = await _context.Promotions
-                    .FirstOrDefaultAsync(p => p.Id == orderReq.PromotionId.Value);
-
-                if (promo != null && totalAmount >= promo.MinOrderAmount)
-                {
-                    discountAmount = promo.DiscountType switch
+                    CustomerId = orderReq.CustomerId,
+                    UserId = orderReq.UserId,
+                    OrderDate = DateTime.Now,
+                    Status = orderReq.Status ?? "pending",
+                    Items = orderReq.Items.Select(i => new OrderItem
                     {
-                        "percent" => totalAmount * (promo.DiscountValue / 100),
-                        "amount" => promo.DiscountValue,
-                        _ => 0
-                    };
+                        ProductId = i.ProductId,
+                        Quantity = i.Quantity,
+                        Price = i.Price,
+                        Subtotal = i.Price * i.Quantity
+                    }).ToList()
+                };
 
-                    if (discountAmount > totalAmount)
-                        discountAmount = totalAmount;
+                // ====== 1. Trừ tồn kho ======
+                foreach (var item in order.Items)
+                {
+                    var inventory = await _context.Inventory
+                        .FirstOrDefaultAsync(x => x.ProductId == item.ProductId);
 
-                    promo.UsedCount++;
-                    order.PromotionId = promo.Id;
+                    if (inventory == null)
+                        throw new BadRequestException($"Sản phẩm ID {item.ProductId} chưa có trong kho.");
+
+                    if (inventory.Quantity < item.Quantity)
+                        throw new BadRequestException(
+                            $"Sản phẩm ID {item.ProductId} không đủ hàng. Còn {inventory.Quantity}."
+                        );
+
+                    inventory.Quantity -= item.Quantity;
+                    inventory.UpdatedAt = DateTime.Now;
                 }
+
+                // ====== 2. Tính tiền ======
+                decimal totalAmount = order.Items.Sum(i => i.Subtotal);
+                decimal discountAmount = 0;
+
+                if (orderReq.PromotionId.HasValue)
+                {
+                    var promo = await _context.Promotions
+                        .FirstOrDefaultAsync(p => p.Id == orderReq.PromotionId.Value);
+
+                    if (promo == null)
+                        throw new BadRequestException("Khuyến mãi không tồn tại.");
+
+                    if (promo.UsageLimit > 0 && promo.UsedCount >= promo.UsageLimit)
+                        throw new BadRequestException($"Khuyến mãi '{promo.PromoCode}' đã hết lượt sử dụng.");
+
+                    if (totalAmount >= promo.MinOrderAmount)
+                    {
+                        discountAmount = promo.DiscountType switch
+                        {
+                            "percent" => totalAmount * (promo.DiscountValue / 100),
+                            "amount" => promo.DiscountValue,
+                            _ => 0
+                        };
+
+                        if (discountAmount > totalAmount)
+                            discountAmount = totalAmount;
+
+                        promo.UsedCount++;
+                        order.PromotionId = promo.Id;
+                    }
+                }
+
+                order.TotalAmount = totalAmount - discountAmount;
+                order.DiscountAmount = discountAmount;
+
+                // ====== 3. Lưu Order ======
+                _context.Orders.Add(order);
+                await _context.SaveChangesAsync();
+
+                // ====== 4. Commit ======
+                await transaction.CommitAsync();
+
+                return order;
             }
-
-            order.TotalAmount = totalAmount - discountAmount;
-            order.DiscountAmount = discountAmount;
-
-            _context.Orders.Add(order);
-            await _context.SaveChangesAsync();
-
-            return order;
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
-
 
 
         public async Task<List<OrderDto>> GetAllAsync()
@@ -77,6 +115,7 @@ namespace Manage_Store.Services.Impl
                 .Include(o => o.User)
                 .Include(o => o.Items)
                     .ThenInclude(i => i.Product)
+                    .OrderByDescending(o => o.OrderDate)
                 .ToListAsync();
 
             return orders.Select(o => new OrderDto

@@ -4,6 +4,7 @@ using Manage_Store.Data;
 using Microsoft.EntityFrameworkCore;
 using Manage_Store.Models.Requests;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Manage_Store.Exceptions;
 
 
 namespace Manage_Store.Services.Impl
@@ -24,6 +25,15 @@ namespace Manage_Store.Services.Impl
 
         public async Task<Promotion> CreateAsync(PromotionReq promotionReq)
         {
+            
+            if (promotionReq.StartDate > promotionReq.EndDate)
+            {
+                throw new BadRequestException("Ngày bắt đầu không được lớn hơn ngày kết thúc.");
+            }
+            // if(promotionReq.EndDate < DateOnly.FromDateTime(DateTime.Now))
+            // {
+            //     throw new BadRequestException("Ngày kết thúc không được nhỏ hơn ngày hiện tại.");
+            // }
             var promotion = new Promotion
             {
                 PromoCode = promotionReq.PromoCode,
@@ -72,7 +82,15 @@ namespace Manage_Store.Services.Impl
                 throw new Exception($"Không tìm thấy khuyến mãi có ID = {id}");
             }
 
-            // ✏️ Cập nhật các trường
+            if (promotionReq.StartDate > promotionReq.EndDate)
+            {
+                throw new BadRequestException("Ngày bắt đầu không được lớn hơn ngày kết thúc.");
+            }
+            if(promotionReq.EndDate < DateOnly.FromDateTime(DateTime.Now))
+            {
+                throw new BadRequestException("Ngày kết thúc không được nhỏ hơn ngày hiện tại.");
+            }
+            //  Cập nhật các trường
             promotion.PromoCode = promotionReq.PromoCode;
             promotion.Description = promotionReq.Description;
             promotion.DiscountType = promotionReq.DiscountType;

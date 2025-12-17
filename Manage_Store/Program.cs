@@ -15,7 +15,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp", policy =>
     {
-        policy.WithOrigins("http://localhost:3000","https://localhost:3000", "http://localhost:5180", "https://localhost:5180","https://localhost:7059","http://localhost:7059") // FE URL
+        policy.WithOrigins("http://localhost:3000", "https://localhost:3000", "http://localhost:5180", "https://localhost:5180") // FE URL
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
@@ -84,6 +84,25 @@ builder.Services.AddScoped<IMomoService, MomoService>();
 builder.Services.AddSingleton<Manage_Store.Security.JwtHelper>();
 
 var app = builder.Build();
+
+// Đăng ký GlobalExceptionMiddleware để bắt tất cả exception
+app.UseMiddleware<Manage_Store.Middleware.GlobalExceptionMiddleware>();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+// app.UseHttpsRedirection();
+
+app.UseCors("AllowReactApp");
+app.UseAuthorization();
+
+app.MapControllers();
+
+app.Run();
+
 
 if (app.Environment.IsDevelopment())
 {

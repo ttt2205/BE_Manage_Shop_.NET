@@ -136,7 +136,7 @@ namespace Manage_Store.Controllers
             return Ok(ApiResponse<string>.Builder()
             .WithSuccess(true)
             .WithStatus(200)
-            .WithMessage("Xóa category thành công")
+            .WithMessage("Xóa product thành công")
             .Build());
         }
     }

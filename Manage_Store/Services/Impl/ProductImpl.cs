@@ -3,6 +3,7 @@ using Manage_Store.Models.Entities;
 using Manage_Store.Data;
 using Microsoft.EntityFrameworkCore;
 using Manage_Store.Models.Requests;
+using Manage_Store.Exceptions;
 
 
 namespace Manage_Store.Services.Impl
@@ -106,13 +107,27 @@ namespace Manage_Store.Services.Impl
         public async Task DeleteAsync(int id)
         {
             var product = await _context.Products.FindAsync(id);
+            if (product == null)
+                throw new BadRequestException("Product không tồn tại.");
 
-            // Xóa product
+            bool hasOrderItems = await _context.OrderItems.AnyAsync(oi => oi.ProductId == id);
+            if (hasOrderItems)
+                throw new BadRequestException("Không thể xoá sản phẩm vì có order item liên quan.");
+            bool hasInventory = await _context.Inventory
+                .AnyAsync(i => i.ProductId == id);
+
+            bool hasAuditItems = await _context.InventoryAuditItems
+                .AnyAsync(ai => ai.ProductId == id);
+
+            if (hasInventory || hasAuditItems)
+                throw new BadRequestException(
+                    "Không thể xoá sản phẩm vì đang tồn tại trong kho hoặc lịch sử kiểm kê."
+                );
+
             _context.Products.Remove(product);
-
-            // Lưu thay đổi vào DB
             await _context.SaveChangesAsync();
         }
+
 
         public async Task<List<Product>> GetAllAsync()
         {
@@ -130,7 +145,7 @@ namespace Manage_Store.Services.Impl
                     SupplierId = p.SupplierId,
                     Category = p.Category,
                     Supplier = p.Supplier
-                    
+
                 })
                 .ToListAsync();
         }
